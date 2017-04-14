@@ -10,12 +10,12 @@ public class Debug {
 	private static boolean DEBUG = true;
 	private static boolean LOG = true;
 	
-	private static String debugFolder = "C:\\Users\\Ian\\Documents\\Car Project\\logs\\";
+	private static String debugFolder = "D:\\RC\\logs\\";
 	private static String debugFile;
 	private static FileWriter fw;
 	
 	public static void init(){
-		debugFile = new Date().toString();
+		debugFile = "This should be the date";
 		try {
 			fw = new FileWriter(debugFolder + debugFile + ".txt");
 		} catch (IOException e) {

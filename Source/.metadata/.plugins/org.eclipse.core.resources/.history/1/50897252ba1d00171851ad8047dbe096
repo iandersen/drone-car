@@ -1,0 +1,7 @@
+import javafx.application.Application;
+import javafx.stage.Stage;
+package com.htmlhigh5.gui;
+
+public class GUI {
+	
+}
