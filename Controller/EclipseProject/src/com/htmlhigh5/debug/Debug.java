@@ -1,23 +1,36 @@
 package com.htmlhigh5.debug;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.htmlhigh5.Main;
 
 public class Debug {
 	private static boolean ERROR = true;
 	private static boolean WARN = true;
 	private static boolean DEBUG = true;
-	private static boolean LOG = true;
 	
-	private static String debugFolder = "C:\\Users\\Ian\\Documents\\Car Project\\logs\\";
-	private static String debugFile;
+	private static String debugFolder;
 	private static FileWriter fw;
 	
+	private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	
 	public static void init(){
-		debugFile = new Date().toString();
+		String debugLevel = Main.config.getString("DEBUG_LEVEL");
+		switch(debugLevel){
+		case "SILENT": ERROR = false; WARN = false; DEBUG = false; break;
+		case "ERROR": WARN = false; DEBUG = false; break;
+		case "WARN": DEBUG = false; break;
+		}
+		debugFolder = Main.config.getString("DEBUG_FOLDER");
+		Date date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("yy-MM-dd_HH-mm-ss");
+		String dateString = format.format(date);
 		try {
-			fw = new FileWriter(debugFolder + debugFile + ".txt");
+			fw = new FileWriter(new File(debugFolder + dateString + ".txt"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -36,6 +49,7 @@ public class Debug {
 			return null;
 		String ret = "ERROR!: " + text;
 		System.out.println(ret);
+		log(ret);
 		return ret;
 	}
 	
@@ -44,6 +58,7 @@ public class Debug {
 			return null;
 		String ret = "WARNING!: " + text;
 		System.out.println(ret);
+		log(ret);
 		return ret;
 	}
 	
@@ -51,17 +66,21 @@ public class Debug {
 		if(!DEBUG || text == null || text.isEmpty())
 			return null;
 		System.out.println(text);
+		log(text);
 		return text;
 	}
 	
 	public static String log(String text){
-		if(!LOG || text == null || text.isEmpty())
+		if(text == null || text.isEmpty())
 			return null;
 		try {
-			String ret = "\n[";
-			ret.concat(new Date().toString());
-			ret.concat("]: ");
+			String ret = "[";
+			ret += timeFormat.format(new Date());
+			ret += "]: ";
+			ret += text;
+			ret += System.getProperty("line.separator");
 			fw.append(ret);
+			fw.flush();
 			return ret;
 		} catch (IOException e) {
 			e.printStackTrace();

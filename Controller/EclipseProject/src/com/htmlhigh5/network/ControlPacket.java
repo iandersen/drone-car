@@ -1,7 +1,9 @@
 package com.htmlhigh5.network;
 
+import com.htmlhigh5.Main;
+
 public class ControlPacket {
-	public static final int MAX_PINS = 40;
+	public static final int MAX_PINS = Main.config.getInt("GPIO_PINS");
 	
 	private boolean[] data;
 	private PinCommand[] pinCommands;
