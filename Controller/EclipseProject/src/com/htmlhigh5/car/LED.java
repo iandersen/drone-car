@@ -1,26 +1,26 @@
 package com.htmlhigh5.car;
 
-public class LED extends GPIOComponent{
+public class LED extends GPIOComponent {
 	private LEDState state;
-	
-	public LED(){
+
+	public LED() {
 		this.state = LEDState.OFF;
 	}
-	
-	public LED(LEDState state){
+
+	public LED(LEDState state) {
 		this.state = state;
 	}
-	
-	public LEDState getState(){
+
+	public LEDState getState() {
 		return this.state;
 	}
-	
-	public void setState(LEDState state){
+
+	public void setState(LEDState state) {
 		this.state = state;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString() {
 		return "LED (" + this.state + ")";
 	}
 }
