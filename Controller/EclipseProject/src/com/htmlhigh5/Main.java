@@ -8,6 +8,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.htmlhigh5.debug.Debug;
+import com.htmlhigh5.gui.GUIMain;
 import com.htmlhigh5.network.BadPacketSizeException;
 import com.htmlhigh5.network.PinCommand;
 
@@ -23,6 +24,8 @@ public class Main {
 				Debug.error(ExceptionUtils.getStackTrace(e));
 			}
 		}
+		
+		GUIMain.main(args);
 	}
 	
 	private static void init(){
