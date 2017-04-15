@@ -12,7 +12,8 @@ public class Transmitter {
 		DatagramSocket clientSocket = new DatagramSocket();
 		InetAddress IPAddress = InetAddress.getLocalHost();
 		byte[] data = packet.getBytes();
-		DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, Main.config.getInt("CONTROL_PORT"));
+		DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress,
+		        Main.config.getInt("CONTROL_PORT"));
 		clientSocket.send(sendPacket);
 		clientSocket.close();
 		return 0;

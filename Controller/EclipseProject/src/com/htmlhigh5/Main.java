@@ -7,23 +7,23 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.htmlhigh5.debug.Debug;
-import com.htmlhigh5.network.ControlPacket;
+import com.htmlhigh5.vehicle.Vehicle;
 
 public class Main {
 	public static Configuration config;
+	public static Configuration vehicleConfig;
 
 	public static void main(String[] args) {
 		init();
-		ControlPacket pc = new ControlPacket();
-		for (int i = 0; i < 100; i++)
-			pc.setPin(i, i);
-		pc.send();
+		Vehicle car = new Vehicle();
+		car.init();
 	}
 
 	private static void init() {
 		Configurations configs = new Configurations();
 		try {
 			config = configs.properties(new File("controller.properties"));
+			vehicleConfig = configs.properties(new File("vehicle.properties"));
 		} catch (ConfigurationException cex) {
 			cex.printStackTrace();
 		}
