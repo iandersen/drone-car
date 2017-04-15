@@ -7,12 +7,17 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.htmlhigh5.debug.Debug;
+import com.htmlhigh5.network.ControlPacket;
 
 public class Main {
 	public static Configuration config;
 
 	public static void main(String[] args) {
 		init();
+		ControlPacket pc = new ControlPacket();
+		for (int i = 0; i < 100; i++)
+			pc.setPin(i, i);
+		pc.send();
 	}
 
 	private static void init() {

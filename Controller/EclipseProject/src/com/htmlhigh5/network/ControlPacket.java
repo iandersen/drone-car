@@ -23,7 +23,7 @@ public class ControlPacket {
 		try {
 			pinCommands[pin] = new PinCommand(value);
 		} catch (BadPacketSizeException e) {
-			Debug.error(ExceptionUtils.getStackTrace(e));
+			Debug.printStackTrace(e);
 		}
 	}
 
@@ -38,11 +38,8 @@ public class ControlPacket {
 			PinCommand pc = pinCommands[pin];
 			boolean[] pinData = pc.getContent();
 			if (pc != null)
-				for (int i = 0; i < PinCommand.SIZE; i++) {
+				for (int i = 0; i < PinCommand.SIZE; i++)
 					data[(pin + 1) * 8 - i] = pinData[PinCommand.SIZE - i - 1];
-					System.out.print(data[(pin + 1) * 8 - i] + ", ");
-				}
-			System.out.println();
 		}
 	}
 

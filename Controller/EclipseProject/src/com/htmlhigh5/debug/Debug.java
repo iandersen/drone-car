@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.htmlhigh5.Main;
 
 public class Debug {
@@ -77,6 +79,12 @@ public class Debug {
 		System.out.println(text);
 		log(text);
 		return text;
+	}
+	
+	public static String printStackTrace(Exception e){
+		String ret = ExceptionUtils.getStackTrace(e);
+		Debug.error(ret);
+		return ret;
 	}
 
 	public static String log(String text) {

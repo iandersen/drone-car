@@ -24,7 +24,7 @@ public class GPIOComponent {
 		if (this.pins.size() < numPins && !this.pins.contains(pin))
 			this.pins.add(pin);
 		else {
-			Debug.log(Debug.error("Failed to add pin! Pin: " + pin));
+			Debug.error("Failed to add pin! Pin: " + pin);
 		}
 	}
 }

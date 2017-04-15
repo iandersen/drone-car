@@ -1,8 +1,9 @@
 #Debug:
-DEBUG_FOLDER = C:\\Users\\Ian\\Documents\\Car Project\\logs\\
+DEBUG_FOLDER = 
 
 #From verbose to silent: INFO, WARN, ERROR, SILENT
 DEBUG_LEVEL = INFO
 
 #Config
-GPIO_PINS = 27
+GPIO_PINS = 100
+CONTROL_PORT = 5000
