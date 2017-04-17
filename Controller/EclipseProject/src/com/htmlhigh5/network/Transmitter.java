@@ -4,18 +4,45 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 import com.htmlhigh5.Main;
+import com.htmlhigh5.debug.Debug;
 
 public class Transmitter {
-	public static int sendControlPacket(ControlPacket packet) throws IOException {
-		DatagramSocket clientSocket = new DatagramSocket();
-		InetAddress IPAddress = InetAddress.getLocalHost();
+	private int port;
+	private String targetIP;
+	private DatagramSocket clientSocket;
+	private boolean intialized = false;
+	
+	public Transmitter(){
+		this.intialized = true;
+		try {
+			this.clientSocket = new DatagramSocket();
+		} catch (SocketException e) {
+			Debug.printStackTrace(e);
+		}
+		this.port = Main.config.getInt("CONTROL_PORT");
+		this.targetIP = Main.config.getString("TARGET_IP");
+	}
+
+	public int sendControlPacket(ControlPacket packet) throws IOException {
+		if(!this.intialized)
+			try {
+				throw new Exception("Transmitter was not initialized!");
+			} catch (Exception e) {
+				Debug.printStackTrace(e);
+			}
+		InetAddress IPAddress = targetIP.equalsIgnoreCase("localhost")
+		        || targetIP.equals("127.0.0.1") ? InetAddress.getLocalHost()
+		                : InetAddress.getByName(targetIP);
 		byte[] data = packet.getBytes();
-		DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress,
-		        Main.config.getInt("CONTROL_PORT"));
+		DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, port);
 		clientSocket.send(sendPacket);
-		clientSocket.close();
 		return 0;
+	}
+	
+	public void close(){
+		clientSocket.close();
 	}
 }

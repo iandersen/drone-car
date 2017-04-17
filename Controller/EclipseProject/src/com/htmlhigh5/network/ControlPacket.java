@@ -75,7 +75,7 @@ public class ControlPacket {
 		if (!finalized)
 			finalizeData();
 		try {
-			Transmitter.sendControlPacket(this);
+			Main.transmitter.sendControlPacket(this);
 		} catch (IOException e) {
 			Debug.error(ExceptionUtils.getStackTrace(e));
 		}
