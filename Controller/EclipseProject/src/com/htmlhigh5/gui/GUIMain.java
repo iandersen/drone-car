@@ -15,7 +15,7 @@ public class GUIMain extends Application{
 	public void start(Stage primaryStage) {
 		GUI gui = new GUI();
 		
-		Scene scene = new Scene(gui.getMainPane(), 800, 600);
+		Scene scene = new Scene(gui.getMainPane(), 1000, 600);
 	    primaryStage.setTitle("Assignment 16.17"); // Set the stage title
 	    primaryStage.setScene(scene); // Place the scene in the stage
 	    primaryStage.show(); // Display the stage
