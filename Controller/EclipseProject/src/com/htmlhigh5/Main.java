@@ -32,6 +32,7 @@ public class Main {
 		}
 		Debug.init();
 		transmitter = new Transmitter();
+		// made a change
 	}
 	
 	public static void shutDown(){
