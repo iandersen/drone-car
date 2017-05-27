@@ -1,4 +1,5 @@
-/bin/
+/Controller/EclipseProject/bin/
 /Source/
 /logs/
-/src/
+/Controller/EclipseProject/controller.properties
+[Bb]in

@@ -1,41 +1,114 @@
 package com.htmlhigh5.network;
 
+import java.io.IOException;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
 import com.htmlhigh5.Main;
+import com.htmlhigh5.debug.Debug;
 
 public class ControlPacket {
-	public static final int MAX_PINS = Main.config.getInt("GPIO_PINS");
-	
+	public static final int MAX_PINS = Main.vehicleConfig.getInt("GPIO_PINS");
+
 	private boolean[] data;
 	private PinCommand[] pinCommands;
-	
-	public ControlPacket(){
+	private boolean finalized = false;
+
+	public ControlPacket() {
 		data = new boolean[PinCommand.SIZE * MAX_PINS];
 		pinCommands = new PinCommand[MAX_PINS];
 	}
-	
-	public void setPin(int pin, int value){
+
+	public void setPin(int pin, int value) {
 		try {
 			pinCommands[pin] = new PinCommand(value);
 		} catch (BadPacketSizeException e) {
-			e.printStackTrace();
+			Debug.printStackTrace(e);
 		}
 	}
-	
-	public int getPinValue(int pin){
+
+	public int getPinValue(int pin) {
 		PinCommand pc = pinCommands[pin];
 		return pc != null ? pc.getValue() : null;
 	}
-	
-	public void finalizeData(){
-		for(int pin = 0; pin < MAX_PINS; pin++){
+
+	public boolean[] getPinData(PinCommand pc) {
+		if (pc == null) {
+			int value = PinCommand.MIN_VALUE;
+			boolean[] ret = new boolean[PinCommand.SIZE];
+			for (int i = PinCommand.SIZE - 1; i >= 0; i--)
+				ret[i] = (value & (1 << i)) != 0;
+			return ret;
+		}
+		return pc.getContent();
+	}
+
+	public byte[] getPinBytes(PinCommand pc) {
+		if (pc == null){
+			int value = PinCommand.MIN_VALUE;
+			int size = PinCommand.SIZE;
+			boolean[] bools = new boolean[size];
+			for (int i = size - 1; i >= 0; i--)
+				bools[i] = (value & (1 << i)) != 0;
+			byte[] ret = new byte[(int) Math.ceil(size / 8)];
+			for (int i = 0; i < ret.length; i++)
+				for (int n = 0; n < 8 && i * 8 + n < size; n++)
+					ret[i] |= bools[i * 8 + n] ? 1 << n : 0;
+			return ret;
+		}
+		return pc.getBytes();
+	}
+
+	private void finalizeData() {
+		finalized = true;
+		for (int pin = 0; pin < MAX_PINS - 1; pin++) {
 			PinCommand pc = pinCommands[pin];
-			if(pc != null)
-				for (int i = pin * PinCommand.SIZE; i < (pin + 1) * PinCommand.SIZE; i++)
-					data[i] = pc.content[i - PinCommand.SIZE];
+			if (pc != null) {
+				boolean[] pinData = getPinData(pc);
+				for (int i = 0; i < PinCommand.SIZE; i++)
+					data[(pin + 1) * 8 - i] = pinData[PinCommand.SIZE - i - 1];
+			}
 		}
 	}
-	
-	public boolean[] getData(){
+
+	public void send() {
+		if (!finalized)
+			finalizeData();
+		try {
+			Main.transmitter.sendControlPacket(this);
+		} catch (IOException e) {
+			Debug.error(ExceptionUtils.getStackTrace(e));
+		}
+	}
+
+	public boolean[] getData() {
 		return data;
+	}
+
+	public byte[] getBytes() {
+		int bytesPerPin = (int) Math.ceil(PinCommand.SIZE / 8);
+		byte[] ret = new byte[MAX_PINS * bytesPerPin];
+		for (int i = 0; i < MAX_PINS; i++) {
+			byte[] pinBytes = this.getPinBytes(pinCommands[i]);
+			for (int n = 0; n < bytesPerPin; n++)
+				ret[i * bytesPerPin + n] = pinBytes[n];
+		}
+		return ret;
+	}
+
+	public void clear() {
+		for (int i = 0; i < this.data.length; i++)
+			this.data[i] = false;
+		for (int i = 0; i < MAX_PINS; i++)
+			this.pinCommands[i] = null;
+	}
+
+	@Override
+	public String toString() {
+		String ret = "{ControlPacket: ";
+		for (PinCommand pc : pinCommands)
+			ret += "[" + pc.toString() + "] ";
+		ret += "} ";
+		return ret;
 	}
 }

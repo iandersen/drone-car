@@ -1,0 +1,10 @@
+#Debug:
+DEBUG_FOLDER = 
+
+#From verbose to silent: INFO, WARN, ERROR, SILENT
+DEBUG_LEVEL = INFO
+
+#Config
+CONTROL_PORT = 5000
+PACKETS_PER_SECOND = 10
+TARGET_IP = localhost
