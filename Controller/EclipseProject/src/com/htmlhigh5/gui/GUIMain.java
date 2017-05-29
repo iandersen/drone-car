@@ -6,7 +6,9 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class GUIMain extends Application {
-
+	public static void startGui(){
+		launch();
+	}
 
 	@Override
 	public void start(Stage primaryStage) {

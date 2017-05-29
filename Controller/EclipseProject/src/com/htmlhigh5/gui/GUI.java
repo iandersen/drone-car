@@ -11,7 +11,7 @@ import javafx.scene.layout.Pane;
 import javafx.geometry.Pos;
 //import javafx.scene.layout.Rectangle;
 
-class GUI{
+public class GUI{
 	private GridPane mainPane = new GridPane();
 	
 	public GUI(){
