@@ -6,6 +6,8 @@ DEBUG_LEVEL = INFO
 
 #Config
 CONTROL_PORT = 5000
+#For initial connection and other various function (e.g. taking a screenshot)
+CONTROL_PORT2 = 5001
 PACKETS_PER_SECOND = 10
 TARGET_IP = localhost
 
