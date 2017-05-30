@@ -21,7 +21,7 @@ public class Main {
 	public static boolean connectionEstablished = false;
 
 	public static void main(String[] args) {
-		init();
+		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
 		motorTest();
