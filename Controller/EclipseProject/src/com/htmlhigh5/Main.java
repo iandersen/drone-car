@@ -17,7 +17,7 @@ public class Main {
 	private static Vehicle vehicle;
 
 	public static void main(String[] args) {
-		init();
+		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
 	}
