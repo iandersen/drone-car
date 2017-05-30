@@ -45,6 +45,7 @@ public class Receiver {
 			System.out.println("Receiving");
 			String message = new String(receivePacket.getData());
 			this.parsePacket(message);
+			receiveData = new byte[1024];
 			//InetAddress IPAddress = receivePacket.getAddress();
 			//int port = receivePacket.getPort();
 			//System.out.println("Received from " + IPAddress + ":" + port);
@@ -67,6 +68,10 @@ public class Receiver {
 		
 		if(keyPairs.get("access") != null){
 			this.handleAccess(keyPairs.get("access"));
+		}
+		
+		if(keyPairs.get("0") != null){
+			Debug.debug("Connection is alive");
 		}
 	}
 	
