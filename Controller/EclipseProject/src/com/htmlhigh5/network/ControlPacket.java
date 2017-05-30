@@ -1,9 +1,5 @@
 package com.htmlhigh5.network;
 
-import java.io.IOException;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
 
@@ -74,11 +70,7 @@ public class ControlPacket {
 	public void send() {
 		if (!finalized)
 			finalizeData();
-		try {
-			Main.transmitter.sendControlPacket(this);
-		} catch (IOException e) {
-			Debug.error(ExceptionUtils.getStackTrace(e));
-		}
+		Main.transmitter.sendControlPacket(this);
 	}
 
 	public boolean[] getData() {

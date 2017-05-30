@@ -4,6 +4,7 @@ import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.ConfigErrorException;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.network.ControlPacket;
+import com.htmlhigh5.network.CustomPacket;
 
 public class Vehicle {
 	private int numDevices;
@@ -61,6 +62,7 @@ public class Vehicle {
 			}
 			devices[i] = new GPIOComponent(type);
 		}
+		this.sendInitPacket();
 	}
 
 	public void start() {
@@ -69,6 +71,7 @@ public class Vehicle {
 		this.running = true;
 		Debug.debug("Vehicle intialized!");
 		Vehicle self = this;
+		Main.receiver.start();
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -106,5 +109,10 @@ public class Vehicle {
 
 	public boolean isRunning() {
 		return running;
+	}
+	
+	public void sendInitPacket(){
+		CustomPacket initPacket = new CustomPacket(Main.config.getString("PASSWORD"));
+		initPacket.send();
 	}
 }
