@@ -27,6 +27,7 @@ public class Main {
 		vehicle.start();
 		//GUIMain.startGUI();
 		motorTest();
+		lightTest();
 		servoTest();
 	}
 	
@@ -49,18 +50,35 @@ public class Main {
 	}
 	
 	private static void servoTest(){
-		while(true){
-			try {
-				vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
-				Thread.sleep(300);
-			} catch (BadGPIOValueException e) {
-				// TODO Auto-generated catch block
-				Debug.printStackTrace(e);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				Debug.printStackTrace(e);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true){
+						vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
+						Thread.sleep(300);
+					}
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
 			}
-		}
+		}).start();
+	}
+	
+	private static void lightTest(){
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true){
+						vehicle.getDevices()[2].toggle();
+						Thread.sleep(5000);
+					}
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
+			}
+		}).start();
 	}
 
 	private static void init() {

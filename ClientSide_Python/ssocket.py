@@ -58,7 +58,11 @@ class GPIOThread(threading.Thread):
 				if new_pw[i] != current_pw[i]:
 					current_pw[i]=new_pw[i]
 					print "Setting ", i, " to ", new_pw[i]
-					pi.set_servo_pulsewidth(i, new_pw[i])
+					if new_pw[i] >= 1000:
+                                                pi.set_servo_pulsewidth(i, new_pw[i])
+                                        else:
+                                                pi.set_servo_pulsewidth(i, 0)
+                                                pi.write(i, new_pw[i])
 			time.sleep(0.05)
 		print "GPIO output Terminated!"
 		
@@ -109,12 +113,20 @@ class GPIOSocketThread(threading.Thread):
                                 if len(data) > 0:
                                         i = 0
                                         for c in data:
-                                                val = 1000 + 10 * (ord(c)-48)
-                                                if len(new_pw) <= i:
-                                                        new_pw.append(val)
-                                                        current_pw.append(0)
-                                                else:
-                                                        new_pw[i] = val
+                                                val = (ord(c)-48)
+                                                if val <= 100:
+                                                        pw = 1000 + 10 * val
+                                                        if len(new_pw) <= i:
+                                                                new_pw.append(0)
+                                                                current_pw.append(0)
+                                                        else:
+                                                                if new_pw[i] < 1000:
+                                                                        current_pw[i] = pw
+                                                                new_pw[i] = pw
+                                                                i += 1
+                                                elif len(new_pw) > i:
+                                                        on = 0 if val == 101 else 1
+                                                        new_pw[i] = on
                                                         i += 1
                         else:
                                 print "Unauthorized Address! GPIO Control not granted!"
@@ -131,6 +143,7 @@ def close():
 	stopped = 1
 	for i in range(2, len(new_pw)):
 		pi.set_servo_pulsewidth(i, 0)
+		pi.write(i, 0)
 
 while not stopped:
 	try:
