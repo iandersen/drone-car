@@ -6,5 +6,21 @@ DEBUG_LEVEL = INFO
 
 #Config
 CONTROL_PORT = 5000
+#For initial connection and other various function (e.g. taking a screenshot)
+CONTROL_PORT2 = 5001
 PACKETS_PER_SECOND = 10
 TARGET_IP = localhost
+PASSWORD = THE_SENATE!
+
+#Listening to the car
+VIDEO_STREAM_PORT = 8554
+VIDEO_STREAM_IP = 
+LISTEN_PORT = 5002
+
+#KeyOptions
+TRIGGER_ESC = E
+TRIGGER_SERVO = S
+TRIGGER_MOTOR = M
+LIGHT_ON = N
+LIGHT_OFF = F
+CONFIRM_VALUE = V (AFTER ENTERING NUMBER)
