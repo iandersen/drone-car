@@ -15,7 +15,7 @@ public class GPIOComponent {
 	public GPIOType getType() {
 		return this.type;
 	}
-
+    // This is what the keyboard presses and releases will have to trigger
 	public void setValue(int value) throws BadGPIOValueException {
 		if (value < 0 || value > 100)
 			throw new BadGPIOValueException(value);
