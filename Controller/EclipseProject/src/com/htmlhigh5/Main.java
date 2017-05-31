@@ -8,6 +8,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.gui.GUIMain;
+import com.htmlhigh5.network.CustomPacket;
 import com.htmlhigh5.network.Receiver;
 import com.htmlhigh5.network.Transmitter;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
@@ -92,6 +93,11 @@ public class Main {
 		Debug.init();
 		transmitter = new Transmitter();
 		receiver = new Receiver();
+	}
+	
+	public static void initWebcam(){
+		transmitter.sendCustomPacket(new CustomPacket("stream_start"));
+		transmitter.sendCustomPacket(new CustomPacket("take_screenshot"));
 	}
 	
 	public static void shutDown(){

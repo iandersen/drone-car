@@ -88,8 +88,9 @@ public class Vehicle {
 						if(Main.receiver.isConnected)
 							self.sendPacket();
 						else{
+							Debug.debug("Attempting to connect...");
 							self.sendInitPacket();
-							Thread.sleep(2000);
+							Thread.sleep(4000);
 						}
 					} catch (InterruptedException e) {
 						Debug.printStackTrace(e);

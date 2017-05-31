@@ -79,6 +79,7 @@ public class Receiver {
 		if(response.equals("success")){
 			Debug.debug("Connection established successfully!");
 			Main.connectionEstablished = true;
+			Main.initWebcam();
 		} else if (response.equals("failure")){
 			Main.connectionEstablished = false;
 			Debug.error("Connection Rejected! Either a bad password or the vehicle already has an active connection!");

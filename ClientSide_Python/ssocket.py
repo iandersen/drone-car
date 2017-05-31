@@ -5,6 +5,7 @@ import threading
 import atexit
 import select
 import hashlib
+import os
 
 #connect to pigpiod daemon
 pi = pigpio.pi()
@@ -82,7 +83,7 @@ class RespondThread(threading.Thread):
 		global verifiedAddress
 		global stopped
 		while not stopped:
-                        respond("0", "1")
+                        respond("0", "1")#Inform the controller that the connection is alive
                         if len(verifiedAddress) and len(responseContent):
                                 responsesocket.sendto(responseContent, (verifiedAddress[0], sendPort))
                                 responseContent = ""
@@ -152,11 +153,24 @@ while not stopped:
                         customData, customAddress = customsocket.recvfrom(1024)
                         if len(customData) > 0:
                                 if customData == password:
-                                        print "ACCESS GRANTED!"
-                                        respond("access", "success")
-                                        verifiedAddress = customAddress
-                                else:
-                                        respond("access", "failure")
-                                        print "ACCESS DENIED! RECEIVED PASSWORD: ", customData
+                                        if not verifiedAddress or customAddress[0] == verifiedAddress[0]:
+                                                print "ACCESS GRANTED!"
+                                                respond("access", "success")
+                                                verifiedAddress = customAddress
+                                        else:
+                                                respond("access", "failure")
+                                                print "ACCESS DENIED! BAD ADDRESS"
+                                elif verifiedAddress and customAddress[0] == verifiedAddress[0]:
+                                        if customData == "stream_start":
+                                                print "STARTING STREAM"
+                                                os.system('./stream_start.sh')
+                                        elif customData == "stream_stop":
+                                                print "STOPPING STREAM"
+                                                os.system('./stream_stop.sh')
+                                        elif customData == "take_screenshot":
+                                                print "TAKING SCREENSHOT"
+                                                os.system('./screenshot.sh')
+                                        else:
+                                                print "UNRECOGNIZED COMMAND: ", customData
 	except(KeyboardInterrupt,SystemExit):
 		close()
