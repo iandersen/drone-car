@@ -4,6 +4,7 @@ import pigpio
 import threading
 import atexit
 import select
+import hashlib
 
 #connect to pigpiod daemon
 pi = pigpio.pi()
@@ -30,9 +31,15 @@ current_pw = []
 new_pw = []
 stopped = 0
 verifiedAddress = ''
-password = 'THE_SENATE!'
+sha = hashlib.new('sha256')
+sha.update('THE_SENATE!')
+password = sha.hexdigest()
 responseContent = ''
 sendPort = 5002
+
+def respond(key, value):
+        global responseContent
+        responseContent += "|||" + key + ":::" + value
 
 class GPIOThread(threading.Thread):
      def __init__(self, name):
@@ -71,11 +78,11 @@ class RespondThread(threading.Thread):
 		global verifiedAddress
 		global stopped
 		while not stopped:
+                        respond("0", "1")
                         if len(verifiedAddress) and len(responseContent):
-                                print "sending: ", responseContent
                                 responsesocket.sendto(responseContent, (verifiedAddress[0], sendPort))
-                                responseContent = ''
-                        time.sleep(2)
+                                responseContent = ""
+                        time.sleep(1)
 		print "Response Thread Closing"
 		
 respondThread = RespondThread("RespondThread")
@@ -117,10 +124,6 @@ gpioSocketThread = GPIOSocketThread("GPIO_socket_thread")
 
 gpioSocketThread.start()
 
-def respond(key, value):
-        global responseContent
-        responseContent += "|||" + key + ":::" + value
-
 def close():
 	print "\n\n -- Shutting Down --"
 	global stopped
@@ -138,7 +141,6 @@ while not stopped:
                                 if customData == password:
                                         print "ACCESS GRANTED!"
                                         respond("access", "success")
-                                        respond("test", "wow")
                                         verifiedAddress = customAddress
                                 else:
                                         respond("access", "failure")
