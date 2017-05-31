@@ -1,0 +1,19 @@
+vlc -A alsa,none --alsa-audio-device default udp://@:1234 :demux=h264
+raspivid -o - -t 0 -n | cvlc -A alsa,none --alsa-audio-device default stream:///dev/stdin --sout '#rtp{sdp=rtsp://:8554/}' :demux=h264
+ raspivid -o - -t 0 |cvlc -vvv stream:///dev/stdin --sout '#standard{access=http,mux=ts,dst=:8090}' :demux=h264
+
+
+
+This one actually works:
+cvlc -A alsa,none --alsa-audio-device default v4l2:///dev/video0 --v4l2-width 480 --v4l2-height 340 --v4l2-chroma MJPG --v4l2-hflip 1 --v4l2-vflip 1 --sout '#standard{access=http{mime=multipart-mixed-replace},mux=mpjpeg,dst=:8554/}' -I dummy
+
+Lower framerate
+cvlc -A alsa,none --alsa-audio-device default v4l2:///dev/video0 --v4l2-width 480 --v4l2-height 340 --v4l2-chroma MJPG --v4l2-hflip 1 --v4l2-vflip 1 --sout '#transcode{fps=10}:standard{access=http{mime=multipart-mixed-replace},mux=mpjpeg,dst=:8554/}' -I dummy
+
+Lower framerate UDP
+cvlc -A alsa,none --alsa-audio-device default v4l2:///dev/video0 --v4l2-width 480 --v4l2-height 340 --v4l2-chroma MJPG --v4l2-hflip 1 --v4l2-vflip 1 --sout '#transcode{fps=10}:standard{access=udp{mime=multipart-mixed-replace},mux=ts,dst=:8554/}' -I dummy
+
+cvlc -A alsa,none --alsa-audio-device default v4l2:///dev/video0 --v4l2-width 480 --v4l2-height 340 --v4l2-chroma MJPG --v4l2-hflip 1 --v4l2-vflip 1 --sout '#standard{access=http{mime=multipart-mixed-replace},mux=h264,dst=:8554/}' -I dummy
+
+OTHER TEST:
+cvlc -A alsa,none --alsa-audio-device default v4l2:///dev/video0 --v4l2-width 256 --v4l2-height 192 --v4l2-chroma MJPG --v4l2-hflip 1 --v4l2-vflip 1 --sout '#transcode{vcodec=WMV2,vb=400,fps=15,width=256,height=192,deinterlace,acodec=wma2,ab=64,channels=2,samplerate=44100}:duplicate{dst=std{access=http,mux=asf,dst=:8554},dst=display}' -I dummy

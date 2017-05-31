@@ -4,6 +4,8 @@ import pigpio
 import threading
 import atexit
 import select
+import hashlib
+import os
 
 #connect to pigpiod daemon
 pi = pigpio.pi()
@@ -30,9 +32,15 @@ current_pw = []
 new_pw = []
 stopped = 0
 verifiedAddress = ''
-password = 'THE_SENATE!'
+sha = hashlib.new('sha256')
+sha.update('THE_SENATE!')
+password = sha.hexdigest()
 responseContent = ''
 sendPort = 5002
+
+def respond(key, value):
+        global responseContent
+        responseContent += "|||" + key + ":::" + value
 
 class GPIOThread(threading.Thread):
      def __init__(self, name):
@@ -51,7 +59,11 @@ class GPIOThread(threading.Thread):
 				if new_pw[i] != current_pw[i]:
 					current_pw[i]=new_pw[i]
 					print "Setting ", i, " to ", new_pw[i]
-					pi.set_servo_pulsewidth(i, new_pw[i])
+					if new_pw[i] >= 1000:
+                                                pi.set_servo_pulsewidth(i, new_pw[i])
+                                        else:
+                                                pi.set_servo_pulsewidth(i, 0)
+                                                pi.write(i, new_pw[i])
 			time.sleep(0.05)
 		print "GPIO output Terminated!"
 		
@@ -71,11 +83,11 @@ class RespondThread(threading.Thread):
 		global verifiedAddress
 		global stopped
 		while not stopped:
+                        respond("0", "1")#Inform the controller that the connection is alive
                         if len(verifiedAddress) and len(responseContent):
-                                print "sending: ", responseContent
                                 responsesocket.sendto(responseContent, (verifiedAddress[0], sendPort))
-                                responseContent = ''
-                        time.sleep(2)
+                                responseContent = ""
+                        time.sleep(1)
 		print "Response Thread Closing"
 		
 respondThread = RespondThread("RespondThread")
@@ -102,12 +114,20 @@ class GPIOSocketThread(threading.Thread):
                                 if len(data) > 0:
                                         i = 0
                                         for c in data:
-                                                val = 1000 + 10 * (ord(c)-48)
-                                                if len(new_pw) <= i:
-                                                        new_pw.append(val)
-                                                        current_pw.append(0)
-                                                else:
-                                                        new_pw[i] = val
+                                                val = (ord(c)-48)
+                                                if val <= 100:
+                                                        pw = 1000 + 10 * val
+                                                        if len(new_pw) <= i:
+                                                                new_pw.append(0)
+                                                                current_pw.append(0)
+                                                        else:
+                                                                if new_pw[i] < 1000:
+                                                                        current_pw[i] = pw
+                                                                new_pw[i] = pw
+                                                                i += 1
+                                                elif len(new_pw) > i:
+                                                        on = 0 if val == 101 else 1
+                                                        new_pw[i] = on
                                                         i += 1
                         else:
                                 print "Unauthorized Address! GPIO Control not granted!"
@@ -117,10 +137,6 @@ gpioSocketThread = GPIOSocketThread("GPIO_socket_thread")
 
 gpioSocketThread.start()
 
-def respond(key, value):
-        global responseContent
-        responseContent += "|||" + key + ":::" + value
-
 def close():
 	print "\n\n -- Shutting Down --"
 	global stopped
@@ -128,6 +144,7 @@ def close():
 	stopped = 1
 	for i in range(2, len(new_pw)):
 		pi.set_servo_pulsewidth(i, 0)
+		pi.write(i, 0)
 
 while not stopped:
 	try:
@@ -136,12 +153,24 @@ while not stopped:
                         customData, customAddress = customsocket.recvfrom(1024)
                         if len(customData) > 0:
                                 if customData == password:
-                                        print "ACCESS GRANTED!"
-                                        respond("access", "success")
-                                        respond("test", "wow")
-                                        verifiedAddress = customAddress
-                                else:
-                                        respond("access", "failure")
-                                        print "ACCESS DENIED! RECEIVED PASSWORD: ", customData
+                                        if not verifiedAddress or customAddress[0] == verifiedAddress[0]:
+                                                print "ACCESS GRANTED!"
+                                                respond("access", "success")
+                                                verifiedAddress = customAddress
+                                        else:
+                                                respond("access", "failure")
+                                                print "ACCESS DENIED! BAD ADDRESS"
+                                elif verifiedAddress and customAddress[0] == verifiedAddress[0]:
+                                        if customData == "stream_start":
+                                                print "STARTING STREAM"
+                                                os.system('./stream_start.sh')
+                                        elif customData == "stream_stop":
+                                                print "STOPPING STREAM"
+                                                os.system('./stream_stop.sh')
+                                        elif customData == "take_screenshot":
+                                                print "TAKING SCREENSHOT"
+                                                os.system('./screenshot.sh')
+                                        else:
+                                                print "UNRECOGNIZED COMMAND: ", customData
 	except(KeyboardInterrupt,SystemExit):
 		close()

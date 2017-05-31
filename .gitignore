@@ -3,3 +3,4 @@
 /logs/
 /Controller/EclipseProject/controller.properties
 [Bb]in
+*.classpath

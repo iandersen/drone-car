@@ -7,6 +7,8 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.htmlhigh5.debug.Debug;
+import com.htmlhigh5.gui.GUIMain;
+import com.htmlhigh5.network.CustomPacket;
 import com.htmlhigh5.network.Receiver;
 import com.htmlhigh5.network.Transmitter;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
@@ -24,7 +26,9 @@ public class Main {
 		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
+		//GUIMain.startGUI();
 		motorTest();
+		lightTest();
 		servoTest();
 	}
 	
@@ -47,18 +51,35 @@ public class Main {
 	}
 	
 	private static void servoTest(){
-		while(true){
-			try {
-				vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
-				Thread.sleep(300);
-			} catch (BadGPIOValueException e) {
-				// TODO Auto-generated catch block
-				Debug.printStackTrace(e);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				Debug.printStackTrace(e);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true){
+						vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
+						Thread.sleep(300);
+					}
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
 			}
-		}
+		}).start();
+	}
+	
+	private static void lightTest(){
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true){
+						vehicle.getDevices()[2].toggle();
+						Thread.sleep(5000);
+					}
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
+			}
+		}).start();
 	}
 
 	private static void init() {
@@ -72,6 +93,11 @@ public class Main {
 		Debug.init();
 		transmitter = new Transmitter();
 		receiver = new Receiver();
+	}
+	
+	public static void initWebcam(){
+		transmitter.sendCustomPacket(new CustomPacket("stream_start"));
+		transmitter.sendCustomPacket(new CustomPacket("take_screenshot"));
 	}
 	
 	public static void shutDown(){

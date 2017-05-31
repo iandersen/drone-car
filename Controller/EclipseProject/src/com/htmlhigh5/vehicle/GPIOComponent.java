@@ -17,9 +17,17 @@ public class GPIOComponent {
 	}
     // This is what the keyboard presses and releases will have to trigger
 	public void setValue(int value) throws BadGPIOValueException {
-		if (value < 0 || value > 100)
+		if (value < 0 || value > 102)
 			throw new BadGPIOValueException(value);
 		this.value = value;
+	}
+	
+	public void turnOn() throws BadGPIOValueException{
+		this.setValue(102);
+	}
+	
+	public void turnOff() throws BadGPIOValueException{
+		this.setValue(101);
 	}
 
 	public int getValue() {
@@ -27,6 +35,6 @@ public class GPIOComponent {
 	}
 
 	public void toggle() {
-		this.value = this.value == 100 ? 0 : 100;
+		this.value = this.value == 101 ? 102 : 101;
 	}
 }
