@@ -7,6 +7,7 @@ import org.apache.commons.configuration2.builder.fluent.Configurations;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import com.htmlhigh5.debug.Debug;
+import com.htmlhigh5.gui.GUIMain;
 import com.htmlhigh5.network.Receiver;
 import com.htmlhigh5.network.Transmitter;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
@@ -24,6 +25,7 @@ public class Main {
 		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
+		GUIMain.startGUI();
 		motorTest();
 		servoTest();
 	}

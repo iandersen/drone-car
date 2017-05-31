@@ -17,4 +17,8 @@ public class GUIMain extends Application {
 		primaryStage.setScene(scene); // Place the scene in the stage
 		primaryStage.show(); // Display the stage
 	}
+	
+	public static void startGUI(){
+		launch();
+	}
 }

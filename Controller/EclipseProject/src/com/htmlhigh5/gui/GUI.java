@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 //import javafx.scene.layout.Rectangle;
 
-class GUI{
+public class GUI{
 	private GridPane mainPane = new GridPane();
 	
 	public GUI(){
