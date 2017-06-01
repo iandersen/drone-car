@@ -73,7 +73,7 @@ public class Main {
 				try {
 					while(true){
 						vehicle.getDevices()[2].toggle();
-						Thread.sleep(5000);
+						Thread.sleep(500);
 					}
 				} catch (Exception e) {
 					Debug.printStackTrace(e);
@@ -95,8 +95,13 @@ public class Main {
 		receiver = new Receiver();
 	}
 	
-	public static void initWebcam(){
+	public static void startStream(){
+		Debug.debug("Starting Stream...");
 		transmitter.sendCustomPacket(new CustomPacket("stream_start"));
+	}
+	
+	public static void takeScreenshot(){
+		Debug.debug("Taking Screenshot...");
 		transmitter.sendCustomPacket(new CustomPacket("take_screenshot"));
 	}
 	

@@ -73,13 +73,25 @@ public class Receiver {
 		if(keyPairs.get("0") != null){
 			this.ping = true;
 		}
+		
+		if(keyPairs.get("debug") != null){
+			Debug.debug(keyPairs.get("debug"));
+		}
+		
+		if(keyPairs.get("warn") != null){
+			Debug.warn(keyPairs.get("warn"));
+		}
+		
+		if(keyPairs.get("error") != null){
+			Debug.error(keyPairs.get("error"));
+		}
 	}
 	
 	private void handleAccess(String response){
 		if(response.equals("success")){
 			Debug.debug("Connection established successfully!");
 			Main.connectionEstablished = true;
-			Main.initWebcam();
+			Main.startStream();
 		} else if (response.equals("failure")){
 			Main.connectionEstablished = false;
 			Debug.error("Connection Rejected! Either a bad password or the vehicle already has an active connection!");
