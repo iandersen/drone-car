@@ -8,7 +8,7 @@ public class PinCommand {
 
 	public PinCommand(int value) throws BadPacketSizeException {
 		this.value = value + MIN_VALUE;
-		if (value < 0 || value > 100)
+		if (value < 0 || value > 102)
 			throw new BadPacketSizeException(value);
 		else {
 			for (int i = SIZE - 1; i >= 0; i--)

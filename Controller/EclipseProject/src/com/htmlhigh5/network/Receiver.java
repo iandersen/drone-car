@@ -18,6 +18,9 @@ public class Receiver {
 	private int port;
 	private DatagramSocket serverSocket;
 	private boolean stopped = true;
+	private boolean ping = false;
+	public boolean hasConnected = false;
+	public boolean isConnected = false;
 
 	public Receiver() {
 		this.port = Main.config.getInt("LISTEN_PORT");
@@ -38,18 +41,15 @@ public class Receiver {
 	private void listen() throws Exception {
 		byte[] receiveData = new byte[1024];
 		Debug.debug("Receiver listening on port " + this.port);
-		int msSinceReceived = 0;
 		while (!stopped) {
 			DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 			serverSocket.receive(receivePacket);
-			System.out.println("Receiving");
 			String message = new String(receivePacket.getData());
 			this.parsePacket(message);
 			receiveData = new byte[1024];
 			//InetAddress IPAddress = receivePacket.getAddress();
 			//int port = receivePacket.getPort();
 			//System.out.println("Received from " + IPAddress + ":" + port);
-			Thread.sleep(50);
 		}
 	}
 	
@@ -71,7 +71,7 @@ public class Receiver {
 		}
 		
 		if(keyPairs.get("0") != null){
-			Debug.debug("Connection is alive");
+			this.ping = true;
 		}
 	}
 	
@@ -79,6 +79,7 @@ public class Receiver {
 		if(response.equals("success")){
 			Debug.debug("Connection established successfully!");
 			Main.connectionEstablished = true;
+			Main.initWebcam();
 		} else if (response.equals("failure")){
 			Main.connectionEstablished = false;
 			Debug.error("Connection Rejected! Either a bad password or the vehicle already has an active connection!");
@@ -105,6 +106,45 @@ public class Receiver {
 				}
 			}
 		}).start();
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					self.checkActivity();
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
+			}
+		}).start();
+	}
+	
+	private void checkActivity(){
+		int secondsSinceConnection = 0;
+		while (!stopped) {
+			try {
+				Thread.sleep(1000);
+				secondsSinceConnection++;
+				if(this.ping){
+					secondsSinceConnection = 0;
+					this.ping = false;
+					if (!this.hasConnected)
+						this.hasConnected = true;
+				}
+				if(secondsSinceConnection < 2)
+					this.isConnected = true;
+				else
+					this.isConnected = false;
+				if(this.hasConnected){
+					if(secondsSinceConnection == 25)
+						Debug.error("Connection Lost");
+					else if(secondsSinceConnection % 5 == 0 && secondsSinceConnection > 0 && secondsSinceConnection < 25)
+						Debug.warn("No connection in " + secondsSinceConnection + " seconds");
+				}
+			} catch (InterruptedException e) {
+				Debug.printStackTrace(e);
+			}
+		}
 	}
 
 	public int getPort() {

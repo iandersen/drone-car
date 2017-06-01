@@ -1,5 +1,11 @@
 package com.htmlhigh5.vehicle;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import javax.xml.bind.DatatypeConverter;
+
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.ConfigErrorException;
 import com.htmlhigh5.debug.Debug;
@@ -79,7 +85,13 @@ public class Vehicle {
 					try {
 						self.updatePacket();
 						Thread.sleep((int) (1000 * 1 / self.packetsPerSecond));
-						self.sendPacket();
+						if(Main.receiver.isConnected)
+							self.sendPacket();
+						else{
+							Debug.debug("Attempting to connect...");
+							self.sendInitPacket();
+							Thread.sleep(4000);
+						}
 					} catch (InterruptedException e) {
 						Debug.printStackTrace(e);
 					}
@@ -112,7 +124,16 @@ public class Vehicle {
 	}
 	
 	public void sendInitPacket(){
-		CustomPacket initPacket = new CustomPacket(Main.config.getString("PASSWORD"));
-		initPacket.send();
+		String password = Main.config.getString("PASSWORD");
+		MessageDigest digest;
+		try {
+			digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+			String toSend = DatatypeConverter.printHexBinary(hash).toLowerCase();
+			CustomPacket initPacket = new CustomPacket(toSend);
+			initPacket.send();
+		} catch (NoSuchAlgorithmException e) {
+			Debug.printStackTrace(e);
+		}
 	}
 }
