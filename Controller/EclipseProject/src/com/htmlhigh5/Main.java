@@ -29,7 +29,7 @@ public class Main {
 		//GUIMain.startGUI();
 		motorTest();
 		lightTest();
-		servoTest();
+		//servoTest();
 	}
 	
 	private static void motorTest(){
