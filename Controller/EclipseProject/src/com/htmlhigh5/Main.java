@@ -26,7 +26,7 @@ public class Main {
 		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
-		//GUIMain.startGUI();
+		GUIMain.startGUI();
 		motorTest();
 		lightTest();
 		//servoTest();
