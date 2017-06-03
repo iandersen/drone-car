@@ -11,14 +11,14 @@ import javafx.stage.Stage;
 
 public class GUIMain extends Application {
 
-
+//D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/googlemaps.html
 	 @Override
 	 public void start(Stage stage) {
         // create web engine and view
 		Pane temp = new Pane();
         final WebView webView = new WebView();
         final WebEngine webEngine = webView.getEngine();
-        webEngine.load("http://www.oracle.com/products/index.html");
+        webEngine.load(getClass().getResource("/googlemaps.html").toExternalForm());
         temp.getChildren().add(webView);
         // create scene
         stage.setTitle("Web Map");
