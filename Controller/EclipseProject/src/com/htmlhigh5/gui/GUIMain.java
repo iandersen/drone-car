@@ -3,20 +3,29 @@ package com.htmlhigh5.gui;
 import com.htmlhigh5.debug.Debug;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class GUIMain extends Application {
 
 
-	@Override
-	public void start(Stage primaryStage) {
-		GUI gui = new GUI();
-
-		Scene scene = new Scene(gui.getMainPane(), 800, 600);
-		primaryStage.setTitle("Assignment 16.17"); // Set the stage title
-		primaryStage.setScene(scene); // Place the scene in the stage
-		primaryStage.show(); // Display the stage
-	}
+	 @Override
+	 public void start(Stage stage) {
+        // create web engine and view
+		Pane temp = new Pane();
+        final WebView webView = new WebView();
+        final WebEngine webEngine = webView.getEngine();
+        webEngine.load("http://www.oracle.com/products/index.html");
+        temp.getChildren().add(webView);
+        // create scene
+        stage.setTitle("Web Map");
+        Scene scene = new Scene(temp,1000,700);
+        stage.setScene(scene);
+        stage.show();
+	 }
 	
 	public static void startGUI(){
 		launch();
