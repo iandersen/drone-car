@@ -11,6 +11,8 @@ import com.htmlhigh5.debug.ConfigErrorException;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.network.ControlPacket;
 import com.htmlhigh5.network.CustomPacket;
+import com.htmlhigh5.vehicle.GPIOComponent;
+import com.htmlhigh5.vehicle.GPIOType;
 
 public class Vehicle {
 	private int numDevices;
