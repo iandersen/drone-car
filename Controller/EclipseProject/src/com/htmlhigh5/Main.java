@@ -27,27 +27,25 @@ public class Main {
 		vehicle = new Vehicle();
 		vehicle.start();
 		//GUIMain.startGUI();
-		motorTest();
-		lightTest();
+		//lightTest();
 		//servoTest();
+		motorTest();
 	}
 	
 	private static void motorTest(){
-		try {
-			vehicle.getDevices()[1].setValue(50);
-			Thread.sleep(3000);
-			vehicle.getDevices()[1].setValue(60);
-			Thread.sleep(3000);
-			vehicle.getDevices()[1].setValue(70);
-			Thread.sleep(3000);
-			vehicle.getDevices()[1].setValue(50);
-		} catch (BadGPIOValueException e) {
-			// TODO Auto-generated catch block
-			Debug.printStackTrace(e);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			Debug.printStackTrace(e);
-		}
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true){
+						vehicle.getDevices()[1].setValue((int)Math.floor(Math.random()*30));
+						Thread.sleep(1000);
+					}
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
+			}
+		}).start();
 	}
 	
 	private static void servoTest(){
@@ -57,7 +55,7 @@ public class Main {
 				try {
 					while(true){
 						vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
-						Thread.sleep(300);
+						Thread.sleep(1500);
 					}
 				} catch (Exception e) {
 					Debug.printStackTrace(e);
