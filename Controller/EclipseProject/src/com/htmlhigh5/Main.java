@@ -26,19 +26,36 @@ public class Main {
 		init(); // loading up config files
 		vehicle = new Vehicle();
 		vehicle.start();
-		//GUIMain.startGUI();
-		//lightTest();
-		//servoTest();
-		motorTest();
+		// GUIMain.startGUI();
 	}
-	
-	private static void motorTest(){
+
+	public static void onConnect() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					while(true){
-						vehicle.getDevices()[1].setValue((int)Math.floor(Math.random()*30));
+					Thread.sleep(3000);
+					Debug.debug("Initializing control simulation");
+					lightTest();
+					servoTest();
+					motorTest();
+				} catch (Exception e) {
+					Debug.printStackTrace(e);
+				}
+			}
+		}).start();
+	}
+
+	private static void motorTest() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					vehicle.getDevices()[1].setValue(50);
+					int i = 0;
+					while (true) {
+						vehicle.getDevices()[1].setValue(50 + i * 2);
+						i = i < 11 ? i + 1 : 0;
 						Thread.sleep(1000);
 					}
 				} catch (Exception e) {
@@ -47,14 +64,14 @@ public class Main {
 			}
 		}).start();
 	}
-	
-	private static void servoTest(){
+
+	private static void servoTest() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					while(true){
-						vehicle.getDevices()[0].setValue((int)Math.floor(Math.random()*100));
+					while (true) {
+						vehicle.getDevices()[0].setValue((int) Math.floor(Math.random() * 100));
 						Thread.sleep(1500);
 					}
 				} catch (Exception e) {
@@ -63,13 +80,13 @@ public class Main {
 			}
 		}).start();
 	}
-	
-	private static void lightTest(){
+
+	private static void lightTest() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					while(true){
+					while (true) {
 						vehicle.getDevices()[2].toggle();
 						Thread.sleep(500);
 					}
@@ -92,18 +109,18 @@ public class Main {
 		transmitter = new Transmitter();
 		receiver = new Receiver();
 	}
-	
-	public static void startStream(){
+
+	public static void startStream() {
 		Debug.debug("Starting Stream...");
 		transmitter.sendCustomPacket(new CustomPacket("stream_start"));
 	}
-	
-	public static void takeScreenshot(){
+
+	public static void takeScreenshot() {
 		Debug.debug("Taking Screenshot...");
 		transmitter.sendCustomPacket(new CustomPacket("take_screenshot"));
 	}
-	
-	public static void shutDown(){
+
+	public static void shutDown() {
 		transmitter.close();
 		vehicle.stop();
 	}

@@ -11,8 +11,6 @@ import com.htmlhigh5.debug.ConfigErrorException;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.network.ControlPacket;
 import com.htmlhigh5.network.CustomPacket;
-import com.htmlhigh5.vehicle.GPIOComponent;
-import com.htmlhigh5.vehicle.GPIOType;
 
 public class Vehicle {
 	private int numDevices;
@@ -35,7 +33,7 @@ public class Vehicle {
 		        || deviceTypeNames.length != this.numDevices)
 			try {
 				throw new ConfigErrorException(
-				        "Their is an inconsistency in the number of GPIO devices and pins in vehicle.properties! Number of devices: "
+				        "There is an inconsistency in the number of GPIO devices and pins in vehicle.properties! Number of devices: "
 				                + this.numDevices + " Devices Listed: " + deviceTypeNames.length
 				                + " Pin Numbers Listed: " + pinNumberStrings.length);
 			} catch (ConfigErrorException e) {

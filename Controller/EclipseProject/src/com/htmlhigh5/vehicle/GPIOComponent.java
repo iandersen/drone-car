@@ -1,5 +1,6 @@
 package com.htmlhigh5.vehicle;
 
+
 public class GPIOComponent {
 	private GPIOType type;
 	private int value;

@@ -1,14 +1,8 @@
 package com.htmlhigh5.network;
 
-import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.util.HashMap;
 
 import com.htmlhigh5.Main;
@@ -26,14 +20,7 @@ public class Receiver {
 		this.port = Main.config.getInt("LISTEN_PORT");
 		try {
 			this.serverSocket = new DatagramSocket(this.port);
-			Selector selector = Selector.open();
-			ServerSocketChannel ssChannel = ServerSocketChannel.open();
-			ssChannel.configureBlocking(false);
-			ssChannel.socket().bind(new InetSocketAddress(InetAddress.getLocalHost(), port));
-		    ssChannel.register(selector, SelectionKey.OP_ACCEPT);
 		} catch (SocketException e) {
-			Debug.printStackTrace(e);
-		} catch (IOException e) {
 			Debug.printStackTrace(e);
 		}
 	}
@@ -91,7 +78,8 @@ public class Receiver {
 		if(response.equals("success")){
 			Debug.debug("Connection established successfully!");
 			Main.connectionEstablished = true;
-			Main.startStream();
+			Main.onConnect();
+			//Main.startStream();
 		} else if (response.equals("failure")){
 			Main.connectionEstablished = false;
 			Debug.error("Connection Rejected! Either a bad password or the vehicle already has an active connection!");

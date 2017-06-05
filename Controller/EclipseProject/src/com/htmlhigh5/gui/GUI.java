@@ -10,19 +10,19 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.geometry.Pos;
 
-import com.lynden.gmapsfx.GoogleMapView;
-import com.lynden.gmapsfx.MapComponentInitializedListener;
-import com.lynden.gmapsfx.javascript.object.DirectionsPane;
-import com.lynden.gmapsfx.javascript.object.GoogleMap;
-import com.lynden.gmapsfx.javascript.object.InfoWindow;
-import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
-import com.lynden.gmapsfx.javascript.object.LatLong;
-import com.lynden.gmapsfx.javascript.object.MapOptions;
-import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
-import com.lynden.gmapsfx.javascript.object.Marker;
-import com.lynden.gmapsfx.javascript.object.MarkerOptions;
-import com.lynden.gmapsfx.service.directions.DirectionsService;
-import com.teamdev.jxmaps.javafx.MapView;
+//import com.lynden.gmapsfx.GoogleMapView;
+//import com.lynden.gmapsfx.MapComponentInitializedListener;
+//import com.lynden.gmapsfx.javascript.object.DirectionsPane;
+//import com.lynden.gmapsfx.javascript.object.GoogleMap;
+//import com.lynden.gmapsfx.javascript.object.InfoWindow;
+//import com.lynden.gmapsfx.javascript.object.InfoWindowOptions;
+//import com.lynden.gmapsfx.javascript.object.LatLong;
+//import com.lynden.gmapsfx.javascript.object.MapOptions;
+//import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
+//import com.lynden.gmapsfx.javascript.object.Marker;
+//import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+//import com.lynden.gmapsfx.service.directions.DirectionsService;
+//import com.teamdev.jxmaps.javafx.MapView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -32,7 +32,7 @@ import javafx.scene.control.Button;
 
 public class GUI extends Exception{
 	private GridPane mainPane = new GridPane();
-	private MapView mapView = new MapView();
+//	private MapView mapView = new MapView();
 	
 	public GUI(){
 		paint();
@@ -46,7 +46,7 @@ public class GUI extends Exception{
 		//mapInitialized();
 		Pane mapPane = new Pane();
 		Rectangle rect = new Rectangle(200, 150, Color.GREEN);
-		mapPane.getChildren().add(mapView);
+//		mapPane.getChildren().add(mapView);
 		mainPane.add(mapPane, 1, 1);
 	}
 	
