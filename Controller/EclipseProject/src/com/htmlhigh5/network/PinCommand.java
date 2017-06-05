@@ -34,6 +34,6 @@ public class PinCommand {
 
 	@Override
 	public String toString() {
-		return "{PinCommand value=" + value + "}";
+		return "{PinCommand value=" + (value - MIN_VALUE) + "}";
 	}
 }
