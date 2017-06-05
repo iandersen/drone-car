@@ -18,21 +18,24 @@ public class GUIMain extends Application {
 //D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/googlemaps.html
 	 @Override
 	 public void start(Stage stage) throws InterruptedException {
-        // create web engine and view
-		GridPane gridPane = new GridPane();
+		//BorderPane borderPane = new BorderPane();
 		Pane pane = new Pane();
-        final WebView webView = new WebView();
-        final WebEngine webEngine = webView.getEngine();
+
+        stage.setTitle("Web Map");
+        Scene scene = new Scene(pane);
+        stage.setScene(scene);
+        stage.show();
+        
+        WebView webView = new WebView();
+        WebEngine webEngine = webView.getEngine();
+        
         URL url = getClass().getResource("googlemap.html");
         webEngine.load(url.toExternalForm());
+
+        webView.maxWidthProperty().bind(pane.widthProperty().divide(4));
+        webView.maxHeightProperty().bind(pane.heightProperty().divide(3));
+        
         pane.getChildren().add(webView);
-        gridPane.add(pane, 0, 0);
-        // create scene
-        stage.setTitle("Web Map");
-        Scene scene = new Scene(gridPane);
-        stage.setScene(scene);
-        System.out.println("test");
-        stage.show();
 	 }
 	
 	public static void startGUI(){
