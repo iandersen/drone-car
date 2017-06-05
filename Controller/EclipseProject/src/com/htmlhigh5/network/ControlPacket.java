@@ -11,10 +11,11 @@ public class ControlPacket {
 	private int startPin = 2;
 	private int numPins = 0;
 
-	public ControlPacket() {
+	public ControlPacket(int startPin) {
 		this.numPins = (Main.vehicle.numDevices + 1);
 		data = new boolean[PinCommand.SIZE * numPins];
 		pinCommands = new PinCommand[numPins];
+		this.setStart(startPin);
 	}
 	
 	public void setStart(int startPin){
@@ -85,7 +86,6 @@ public class ControlPacket {
 	public void send() {
 		if (!finalized)
 			finalizeData();
-		System.out.println(this);
 		Main.transmitter.sendControlPacket(this);
 	}
 
@@ -105,9 +105,9 @@ public class ControlPacket {
 	}
 
 	public void clear() {
-		for (int i = 0; i < this.data.length; i++)
+		for (int i = 1; i < this.data.length; i++)
 			this.data[i] = false;
-		for (int i = 0; i < numPins; i++)
+		for (int i = 1; i < numPins; i++)
 			this.pinCommands[i] = null;
 	}
 

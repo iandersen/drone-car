@@ -16,6 +16,7 @@ pi = pigpio.pi()
 
 for i in range(2, 27):
 	pi.set_mode(i, pigpio.OUTPUT)
+	pi.write(i, 1)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serversocket.bind(('', 5000))
@@ -37,6 +38,7 @@ sha.update('THE_SENATE!')
 password = sha.hexdigest()
 responseContent = ''
 sendPort = 5002
+streamStarted = 0
 
 def respond(key, value):
         global responseContent
@@ -63,7 +65,7 @@ class GPIOThread(threading.Thread):
                                                 pi.set_servo_pulsewidth(i, new_pw[i])
                                         else:
                                                 pi.set_servo_pulsewidth(i, 0)
-                                                pi.write(i, new_pw[i])
+                                                pi.write(i, not new_pw[i])
 			time.sleep(0.05)
 		print "GPIO output Terminated!"
 		
@@ -86,7 +88,7 @@ class RespondThread(threading.Thread):
                         respond("0", "1")#Inform the controller that the connection is alive
                         if len(verifiedAddress) and len(responseContent):
                                 responsesocket.sendto(responseContent, (verifiedAddress[0], sendPort))
-                                responseContent = ""
+                        responseContent = ""
                         time.sleep(1)
 		print "Response Thread Closing"
 		
@@ -113,23 +115,26 @@ class GPIOSocketThread(threading.Thread):
                         if address and verifiedAddress and address[0] == verifiedAddress[0]:
                                 if len(data) > 0:
                                         i = 0
+                                        beforeStart = -1
                                         for c in data:
                                                 val = (ord(c)-48)
-                                                if val <= 100:
-                                                        pw = 1000 + 10 * val
-                                                        if len(new_pw) <= i:
+                                                if beforeStart != -1:
+                                                        while len(new_pw) <= i + beforeStart:
                                                                 new_pw.append(0)
                                                                 current_pw.append(0)
-                                                        else:
-                                                                if new_pw[i] < 1000:
-                                                                        current_pw[i] = pw
-                                                                new_pw[i] = pw
-                                                                i += 1
-                                                elif len(new_pw) > i:
+                                                if i == 0:
+                                                        beforeStart = val - 1
+                                                elif val <= 100:
+                                                        pw = 1000 + 10 * val
+                                                        if new_pw[beforeStart + i] < 1000:
+                                                                current_pw[beforeStart + i] = pw
+                                                        new_pw[beforeStart + i] = pw
+                                                else:
                                                         on = 0 if val == 101 else 1
-                                                        new_pw[i] = on
-                                                        i += 1
+                                                        new_pw[beforeStart + i] = on
+                                                i += 1
                         else:
+                                respond("error", "Unauthorized Address! GPIO Control not granted!")
                                 print "Unauthorized Address! GPIO Control not granted!"
         print "GPIO Socket Closing"
 		
@@ -140,11 +145,15 @@ gpioSocketThread.start()
 def close():
 	print "\n\n -- Shutting Down --"
 	global stopped
+	global streamStarted
 	#stop pigpio
 	stopped = 1
+	if streamStarted:
+                os.system('./stream_stop.sh')
+                print "Stopping Stream"
 	for i in range(2, len(new_pw)):
 		pi.set_servo_pulsewidth(i, 0)
-		pi.write(i, 0)
+		pi.write(i, 1)
 
 while not stopped:
 	try:
@@ -162,15 +171,29 @@ while not stopped:
                                                 print "ACCESS DENIED! BAD ADDRESS"
                                 elif verifiedAddress and customAddress[0] == verifiedAddress[0]:
                                         if customData == "stream_start":
-                                                print "STARTING STREAM"
-                                                os.system('./stream_start.sh')
+                                                if not streamStarted:
+                                                        print "STARTING STREAM"
+                                                        os.system('./stream_start.sh')
+                                                        respond("debug", "Stream initialized!")
+                                                        streamStarted = 1
+                                                else:
+                                                        print "Stream already started"
+                                                        respond("warn", "Stream already started!")
                                         elif customData == "stream_stop":
-                                                print "STOPPING STREAM"
-                                                os.system('./stream_stop.sh')
+                                                if streamStarted:
+                                                        print "STOPPING STREAM"
+                                                        os.system('./stream_stop.sh')
+                                                        respond("debug", "Stream Terminated!")
+                                                        streamStarted = 0
+                                                else:
+                                                        print "Stream not running"
+                                                        respond("warn", "Cancel failed, stream not running")
                                         elif customData == "take_screenshot":
                                                 print "TAKING SCREENSHOT"
                                                 os.system('./screenshot.sh')
+                                                respond("debug", "Screenshot taken!")
                                         else:
                                                 print "UNRECOGNIZED COMMAND: ", customData
+                                                respond("error", "UNRECOGNIZED COMMAND: ", customData)
 	except(KeyboardInterrupt,SystemExit):
 		close()

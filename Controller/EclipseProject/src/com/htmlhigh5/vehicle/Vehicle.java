@@ -74,8 +74,7 @@ public class Vehicle {
 	}
 
 	public void start() {
-		this.packet = new ControlPacket();
-		this.packet.setStart(this.pinNumbers[0]);
+		this.packet = new ControlPacket(this.pinNumbers[0]);
 		if (this.running)
 			return;
 		this.running = true;
