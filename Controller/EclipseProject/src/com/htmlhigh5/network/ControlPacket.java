@@ -4,27 +4,39 @@ import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
 
 public class ControlPacket {
-	public static final int MAX_PINS = Main.vehicleConfig.getInt("GPIO_PINS");
 
 	private boolean[] data;
 	private PinCommand[] pinCommands;
 	private boolean finalized = false;
+	private int startPin = 2;
+	private int numPins = 0;
 
-	public ControlPacket() {
-		data = new boolean[PinCommand.SIZE * MAX_PINS];
-		pinCommands = new PinCommand[MAX_PINS];
+	public ControlPacket(int startPin) {
+		this.numPins = (Main.vehicle.numDevices + 1);
+		data = new boolean[PinCommand.SIZE * numPins];
+		pinCommands = new PinCommand[numPins];
+		this.setStart(startPin);
+	}
+	
+	public void setStart(int startPin){
+		this.startPin = startPin;
+		try {
+			pinCommands[0] = new PinCommand(startPin);
+		} catch (BadPacketSizeException e) {
+			Debug.printStackTrace(e);
+		}
 	}
 
 	public void setPin(int pin, int value) {
 		try {
-			pinCommands[pin] = new PinCommand(value);
+			pinCommands[pin - this.startPin + 1] = new PinCommand(value);
 		} catch (BadPacketSizeException e) {
 			Debug.printStackTrace(e);
 		}
 	}
 
 	public int getPinValue(int pin) {
-		PinCommand pc = pinCommands[pin];
+		PinCommand pc = pinCommands[pin - startPin + 1];
 		return pc != null ? pc.getValue() : null;
 	}
 
@@ -57,12 +69,16 @@ public class ControlPacket {
 
 	private void finalizeData() {
 		finalized = true;
-		for (int pin = 0; pin < MAX_PINS - 1; pin++) {
+		//Set the first character, which sets the start pin
+		boolean[] startPinData = getPinData(pinCommands[0]);
+		for (int i = 0; i < PinCommand.SIZE; i++)
+			this.data[8 - i] = startPinData[PinCommand.SIZE - i - 1];
+		for (int pin = 1; pin < numPins - 1; pin++) {
 			PinCommand pc = pinCommands[pin];
 			if (pc != null) {
 				boolean[] pinData = getPinData(pc);
 				for (int i = 0; i < PinCommand.SIZE; i++)
-					data[(pin + 1) * 8 - i] = pinData[PinCommand.SIZE - i - 1];
+					this.data[(pin + 1) * 8 - i] = pinData[PinCommand.SIZE - i - 1];
 			}
 		}
 	}
@@ -79,8 +95,8 @@ public class ControlPacket {
 
 	public byte[] getBytes() {
 		int bytesPerPin = (int) Math.ceil(PinCommand.SIZE / 8);
-		byte[] ret = new byte[MAX_PINS * bytesPerPin];
-		for (int i = 0; i < MAX_PINS; i++) {
+		byte[] ret = new byte[numPins * bytesPerPin];
+		for (int i = 0; i < numPins; i++) {
 			byte[] pinBytes = this.getPinBytes(pinCommands[i]);
 			for (int n = 0; n < bytesPerPin; n++)
 				ret[i * bytesPerPin + n] = pinBytes[n];
@@ -89,9 +105,9 @@ public class ControlPacket {
 	}
 
 	public void clear() {
-		for (int i = 0; i < this.data.length; i++)
+		for (int i = 1; i < this.data.length; i++)
 			this.data[i] = false;
-		for (int i = 0; i < MAX_PINS; i++)
+		for (int i = 1; i < numPins; i++)
 			this.pinCommands[i] = null;
 	}
 
@@ -99,7 +115,7 @@ public class ControlPacket {
 	public String toString() {
 		String ret = "{ControlPacket: ";
 		for (PinCommand pc : pinCommands)
-			ret += "[" + pc.toString() + "] ";
+			ret += pc != null ? pc.toString() + " " : "{null} ";
 		ret += "} ";
 		return ret;
 	}

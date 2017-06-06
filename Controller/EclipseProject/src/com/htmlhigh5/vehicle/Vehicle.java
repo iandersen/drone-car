@@ -13,38 +13,40 @@ import com.htmlhigh5.network.ControlPacket;
 import com.htmlhigh5.network.CustomPacket;
 
 public class Vehicle {
-	private int numDevices;
+	public int numDevices;
 	private GPIOComponent[] devices;
 	private int[] pinNumbers;
 	private boolean running = false;
-	private ControlPacket packet = new ControlPacket();
+	private ControlPacket packet;
 	private int packetsPerSecond;
 
 	public Vehicle() {
-		this.numDevices = Main.vehicleConfig.getInt("NUM_ATTACHED_DEVICES");
 		this.packetsPerSecond = Main.config.getInt("PACKETS_PER_SECOND");
 		String[] deviceTypeNames = Main.vehicleConfig.getString("DEVICE_TYPES").replaceAll(" ", "")
 		        .split(",");
 		String[] pinNumberStrings = Main.vehicleConfig.getString("DEVICE_PINS").replaceAll(" ", "")
 		        .split(",");
-		this.pinNumbers = new int[this.numDevices];
-		this.devices = new GPIOComponent[this.numDevices];
-		if (pinNumberStrings.length != deviceTypeNames.length
-		        || deviceTypeNames.length != this.numDevices)
+		numDevices = deviceTypeNames.length;
+		this.pinNumbers = new int[numDevices];
+		this.devices = new GPIOComponent[numDevices];
+		if (pinNumberStrings.length != deviceTypeNames.length)
 			try {
 				throw new ConfigErrorException(
 				        "There is an inconsistency in the number of GPIO devices and pins in vehicle.properties! Number of devices: "
-				                + this.numDevices + " Devices Listed: " + deviceTypeNames.length
+				                + numDevices + " Devices Listed: " + deviceTypeNames.length
 				                + " Pin Numbers Listed: " + pinNumberStrings.length);
 			} catch (ConfigErrorException e) {
 				Debug.printStackTrace(e);
 			}
-		for (int i = 0; i < this.numDevices; i++) {
+		for (int i = 0; i < numDevices; i++) {
 			this.pinNumbers[i] = Integer.parseInt(pinNumberStrings[i]);
 			GPIOType type;
 			switch (deviceTypeNames[i].toUpperCase()) {
-				case "ESC":
-					type = GPIOType.ESC;
+				case "CAR_ESC":
+					type = GPIOType.CAR_ESC;
+				break;
+				case "PLANE_ESC":
+					type = GPIOType.PLANE_ESC;
 				break;
 				case "SERVO":
 					type = GPIOType.SERVO;
@@ -72,6 +74,7 @@ public class Vehicle {
 	}
 
 	public void start() {
+		this.packet = new ControlPacket(this.pinNumbers[0]);
 		if (this.running)
 			return;
 		this.running = true;
