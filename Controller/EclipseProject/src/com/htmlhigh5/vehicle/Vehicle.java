@@ -19,6 +19,7 @@ public class Vehicle {
 	private boolean running = false;
 	private ControlPacket packet;
 	private int packetsPerSecond;
+	public long pingSendTime = 0;
 
 	public Vehicle() {
 		this.packetsPerSecond = Main.config.getInt("PACKETS_PER_SECOND");
@@ -84,17 +85,25 @@ public class Vehicle {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
+				int i = 0;
 				while (self.running) {
 					try {
 						self.updatePacket();
 						Thread.sleep((int) (1000 * 1 / self.packetsPerSecond));
-						if(Main.receiver.isConnected)
+						if (Main.receiver.isConnected) {
+							//Check the latency every three seconds
+							if (i >= self.packetsPerSecond * 3) {
+								i = 0;
+								Main.transmitter.sendCustomPacket(new CustomPacket("ping"));
+								self.pingSendTime = System.currentTimeMillis();
+							}
 							self.sendPacket();
-						else{
+						} else {
 							Debug.debug("Attempting to connect...");
 							self.sendInitPacket();
 							Thread.sleep(4000);
 						}
+						i++;
 					} catch (InterruptedException e) {
 						Debug.printStackTrace(e);
 					}
@@ -125,8 +134,8 @@ public class Vehicle {
 	public boolean isRunning() {
 		return running;
 	}
-	
-	public void sendInitPacket(){
+
+	public void sendInitPacket() {
 		String password = Main.config.getString("PASSWORD");
 		MessageDigest digest;
 		try {

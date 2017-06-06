@@ -45,6 +45,7 @@ public class Debug {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		Debug.debug("Saving log files to " + debugFolder);
 	}
 
 	public static void close() {

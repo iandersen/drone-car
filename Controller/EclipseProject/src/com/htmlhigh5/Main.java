@@ -25,8 +25,8 @@ public class Main {
 	public static void main(String[] args) {
 		init(); // loading up config files
 		vehicle = new Vehicle();
-		//vehicle.start();
-		GUIMain.startGUI();
+		vehicle.start();
+		//GUIMain.startGUI();
 	}
 
 	public static void onConnect() {

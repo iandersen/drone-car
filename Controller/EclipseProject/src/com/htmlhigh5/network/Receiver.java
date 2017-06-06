@@ -15,6 +15,7 @@ public class Receiver {
 	private boolean ping = false;
 	public boolean hasConnected = false;
 	public boolean isConnected = false;
+	private long latency = -1;
 
 	public Receiver() {
 		this.port = Main.config.getInt("LISTEN_PORT");
@@ -34,66 +35,72 @@ public class Receiver {
 			String message = new String(receivePacket.getData());
 			this.parsePacket(message);
 			receiveData = new byte[1024];
-			//InetAddress IPAddress = receivePacket.getAddress();
-			//int port = receivePacket.getPort();
-			//System.out.println("Received from " + IPAddress + ":" + port);
+			// InetAddress IPAddress = receivePacket.getAddress();
+			// int port = receivePacket.getPort();
+			// System.out.println("Received from " + IPAddress + ":" + port);
 		}
 	}
-	
-	private void parsePacket(String message){
+
+	private void parsePacket(String message) {
 		HashMap<String, String> keyPairs = new HashMap<String, String>();
 		String[] objects = message.split("\\|\\|\\|");
-		for(String obj : objects){
-			if(obj.length() > 0){
+		for (String obj : objects) {
+			if (obj.length() > 0) {
 				String[] pair = obj.split(":::");
-				if(pair.length == 2)
+				if (pair.length == 2)
 					keyPairs.put(pair[0], pair[1]);
 				else
-					Debug.error("Bad object received from vehicle! Message Received: " + message + " Rejected object: " + obj);
+					Debug.error("Bad object received from vehicle! Message Received: " + message
+					        + " Rejected object: " + obj);
 			}
 		}
 		
-		if(keyPairs.get("access") != null){
+		if (keyPairs.get("ping") != null) {
+			this.latency = System.currentTimeMillis() - Main.vehicle.pingSendTime;
+		}
+
+		if (keyPairs.get("access") != null) {
 			this.handleAccess(keyPairs.get("access"));
 		}
-		
-		if(keyPairs.get("0") != null){
+
+		if (keyPairs.get("0") != null) {
 			this.ping = true;
 		}
-		
-		if(keyPairs.get("debug") != null){
+
+		if (keyPairs.get("debug") != null) {
 			Debug.debug(keyPairs.get("debug"));
 		}
-		
-		if(keyPairs.get("warn") != null){
+
+		if (keyPairs.get("warn") != null) {
 			Debug.warn(keyPairs.get("warn"));
 		}
-		
-		if(keyPairs.get("error") != null){
+
+		if (keyPairs.get("error") != null) {
 			Debug.error(keyPairs.get("error"));
 		}
 	}
-	
-	private void handleAccess(String response){
-		if(response.equals("success")){
+
+	private void handleAccess(String response) {
+		if (response.equals("success")) {
 			Debug.debug("Connection established successfully!");
 			Main.connectionEstablished = true;
 			Main.onConnect();
-			//Main.startStream();
-		} else if (response.equals("failure")){
+			// Main.startStream();
+		} else if (response.equals("failure")) {
 			Main.connectionEstablished = false;
-			Debug.error("Connection Rejected! Either a bad password or the vehicle already has an active connection!");
+			Debug.error(
+			        "Connection Rejected! Either a bad password or the vehicle already has an active connection!");
 		} else {
 			Debug.error("Bad access value from receiver! Value: " + response);
 		}
 	}
-	
-	public void stop(){
+
+	public void stop() {
 		Debug.debug("Receiver Stopped!");
 		this.stopped = true;
 	}
-	
-	public void start(){
+
+	public void start() {
 		this.stopped = false;
 		Receiver self = this;
 		new Thread(new Runnable() {
@@ -106,7 +113,7 @@ public class Receiver {
 				}
 			}
 		}).start();
-		
+
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -118,27 +125,28 @@ public class Receiver {
 			}
 		}).start();
 	}
-	
-	private void checkActivity(){
+
+	private void checkActivity() {
 		int secondsSinceConnection = 0;
 		while (!stopped) {
 			try {
 				Thread.sleep(1000);
 				secondsSinceConnection++;
-				if(this.ping){
+				if (this.ping) {
 					secondsSinceConnection = 0;
 					this.ping = false;
 					if (!this.hasConnected)
 						this.hasConnected = true;
 				}
-				if(secondsSinceConnection < 2)
+				if (secondsSinceConnection < 2)
 					this.isConnected = true;
 				else
 					this.isConnected = false;
-				if(this.hasConnected){
-					if(secondsSinceConnection == 25)
+				if (this.hasConnected) {
+					if (secondsSinceConnection == 25)
 						Debug.error("Connection Lost");
-					else if(secondsSinceConnection % 5 == 0 && secondsSinceConnection > 0 && secondsSinceConnection < 25)
+					else if (secondsSinceConnection % 5 == 0 && secondsSinceConnection > 0
+					        && secondsSinceConnection < 25)
 						Debug.warn("No connection in " + secondsSinceConnection + " seconds");
 				}
 			} catch (InterruptedException e) {
@@ -149,5 +157,9 @@ public class Receiver {
 
 	public int getPort() {
 		return this.port;
+	}
+	
+	public long getLatency(){
+		return this.latency;
 	}
 }

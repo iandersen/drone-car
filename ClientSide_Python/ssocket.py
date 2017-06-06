@@ -192,6 +192,8 @@ while not stopped:
                                                 print "TAKING SCREENSHOT"
                                                 os.system('./screenshot.sh')
                                                 respond("debug", "Screenshot taken!")
+                                        elif customData == "ping":
+                                                responsesocket.sendto("|||ping:::ping", (verifiedAddress[0], sendPort))
                                         else:
                                                 print "UNRECOGNIZED COMMAND: ", customData
                                                 respond("error", "UNRECOGNIZED COMMAND: ", customData)

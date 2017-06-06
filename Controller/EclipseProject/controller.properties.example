@@ -1,4 +1,5 @@
 #Debug:
+#Must have a \ at the end of folder name (at least on windows)
 DEBUG_FOLDER = 
 
 #From verbose to silent: INFO, WARN, ERROR, SILENT
