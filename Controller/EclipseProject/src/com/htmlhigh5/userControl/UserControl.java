@@ -1,17 +1,52 @@
 package com.htmlhigh5.userControl;
 import com.htmlhigh5.vehicle.*;
+import java.util.ArrayList;
+
 // error if src not included
-public class UserControl {
+    public class UserControl {
+	static boolean off = true;
 	static Vehicle v;
 	static GPIOComponent[] devices;
+	static int[] understand;
 	public static void main(String[] args) {
 		v = new Vehicle();
 		init();
 	}
+	
+	public static void changeServo(char m) {
+		ArrayList<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < devices.length; i++)
+        {
+        	if (understand[i] == 1)
+        	{
+        		list.add(i);
+        	}
+        }
+        for (Integer number : list) {
+        	if (devices[number].getValue() < 90)
+        		switch(m) 
+        		{
+        			case 'i': devices[number].setValue(devices[number].getValue() + 10);
+        		}
+        }
+
+		/*
+		 * cycle through devices and setValue to the incremented value 
+		 */
+	}
+	
+	public static void changeMotor() {
+		
+	}
+
+    public static void changeESC() {
+    	
+    }
+	
     public static void init() {
     	devices = v.getDevices();
     	final int numberOfDevices = devices.length;
-    	int[] understand = new int[numberOfDevices];
+    	understand = new int[numberOfDevices];
     	GPIOComponent s;
     	
     	for(int i = 0; i < devices.length; i++) {
@@ -33,6 +68,22 @@ public class UserControl {
 				while (v.isRunning()) {
 				    try {
 				    	Thread.sleep(33);
+				    	// if (keyisPressed)
+				    	/* {
+				    	 *     switch(keyisPressed.toUpperCase()) 
+				    	 *     {
+				    	 *         case W: // change x, y, z
+				    	 *         changeServo();
+				    	 *         changeESC();
+				    	 *         changeMotor();
+				    	 *         case A: //// change x, y, z
+				    	 *         case S: // change x, y, z
+				    	 *         case D: // change x, y, z
+				    	 *         case N:
+				    	 *     }
+				    	 *     updateGUI()
+				    	 * }
+				    	 */
 				    	// Check if key K is pressed
 				    	// check what key K is
 				    	// ArrayList<Integer> list = typesChangedBy(K);
