@@ -21,9 +21,13 @@ public class GPIOComponent {
 		this.type = gpioTypeFromString(c.getString("TYPE"));
 		pin = c.getInt("PIN");
 		name = c.getString("NAME");
-		maxValue = c.getInt("MAX_PW");
-		minValue = c.getInt("MIN_PW");
+		maxValue = c.containsKey("MAX_PW") ? c.getInt("MAX_PW") : -1;
+		minValue = c.containsKey("MIN_PW") ? c.getInt("MIN_PW") : -1;
 		config = c;
+	}
+	
+	public int getPin(){
+		return this.pin;
 	}
 
 	private GPIOType gpioTypeFromString(String s) {
@@ -40,8 +44,7 @@ public class GPIOComponent {
 				return GPIOType.MOTOR;
 			default:
 				try {
-					throw new ConfigErrorException(
-					        "Unknown GPIOComponent type from config: " + s);
+					throw new ConfigErrorException("Unknown GPIOComponent type from config: " + s);
 				} catch (ConfigErrorException e) {
 					Debug.printStackTrace(e);
 				}
@@ -59,17 +62,17 @@ public class GPIOComponent {
 
 	// This is what the keyboard presses and releases will have to trigger
 	public void setValue(int value) throws BadGPIOValueException {
-		if (value < 0 || value > 102)
+		if (value < 0 || value > 202)
 			throw new BadGPIOValueException(value);
 		this.value = value;
 	}
 
 	public void turnOn() throws BadGPIOValueException {
-		this.setValue(102);
+		this.setValue(202);
 	}
 
 	public void turnOff() throws BadGPIOValueException {
-		this.setValue(101);
+		this.setValue(201);
 	}
 
 	public int getValue() {
@@ -77,19 +80,97 @@ public class GPIOComponent {
 	}
 
 	public void toggle() {
-		this.value = this.value == 101 ? 102 : 101;
+		this.value = this.value == 201 ? 202 : 201;
 	}
 
-	public void handleKeyEvent(String key) {
+	public void modify(int val) {
+		try {
+			int newValue = this.getValue() + val;
+			newValue = newValue > this.minValue ? newValue : this.minValue;
+			newValue = newValue < this.maxValue ? newValue : this.maxValue;
+			System.out.println(newValue);
+			setValue(newValue);
+		} catch (BadGPIOValueException e) {
+			Debug.printStackTrace(e);
+		}
+	}
+
+	public void noKeyEvent() {
 		switch (this.type) {
 			case CAR_ESC:
-				
+				try {
+					this.setValue(100);
+				} catch (BadGPIOValueException e) {
+					Debug.printStackTrace(e);
+				}
+			break;
+			case PLANE_ESC:
+				try {
+					this.setValue(100);
+				} catch (BadGPIOValueException e) {
+					Debug.printStackTrace(e);
+				}
+			break;
+			case SERVO:
+			break;
+			case TOGGLE:
+			break;
+			case MOTOR:
+			break;
+		}
+	}
+
+	public void handleKeyDown(String key) {
+		switch (this.type) {
+			case CAR_ESC:
+				if (key.equalsIgnoreCase(config.getString("ACCELERATE_KEY")))
+					this.modify(config.getInt("ACCELERATION_SPEED"));
+				else if (key.equalsIgnoreCase(config.getString("DECCELERATE_KEY")))
+					this.modify(-config.getInt("ACCELERATION_SPEED"));
+				else
+					try {
+						this.setValue(100);
+					} catch (BadGPIOValueException e) {
+						Debug.printStackTrace(e);
+					}
+			break;
+			case PLANE_ESC:
+				if (key.equalsIgnoreCase(config.getString("ACCELERATE_KEY")))
+					this.modify(config.getInt("ACCELERATION_SPEED"));
+				else if (key.equalsIgnoreCase(config.getString("DECCELERATE_KEY")))
+					this.modify(-config.getInt("ACCELERATION_SPEED"));
+				else
+					try {
+						this.setValue(100);
+					} catch (BadGPIOValueException e) {
+						Debug.printStackTrace(e);
+					}
+			break;
+			case SERVO:
+				if (key.equalsIgnoreCase(config.getString("CLOCKWISE_KEY")))
+					this.modify(config.getInt("ROTATION_SPEED"));
+				else if (key.equalsIgnoreCase(config.getString("COUNTERCLOCKWISE_KEY")))
+					this.modify(-config.getInt("ROTATION_SPEED"));
+			break;
+			case TOGGLE:
+			break;
+			case MOTOR:
+			break;
+		}
+	}
+
+	public void handleKeyPressed(String key) {
+		switch (this.type) {
+			case CAR_ESC:
 			break;
 			case PLANE_ESC:
 			break;
 			case SERVO:
 			break;
 			case TOGGLE:
+				if (key.equalsIgnoreCase(config.getString("TOGGLE_KEY"))){
+					this.toggle();
+				}
 			break;
 			case MOTOR:
 			break;

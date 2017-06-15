@@ -9,7 +9,7 @@ import os
 
 #connect to pigpiod daemon
 pi = pigpio.pi()
- 
+
 # setup pin as an output
 #pi.set_mode(LED_PIN, pigpio.OUTPUT)
 
@@ -26,9 +26,6 @@ customsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 customsocket.bind(('', 6001))
 customsocket.setblocking(0)
 
-responsesocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-responsesocket.bind(('', 5002))
-
 current_pw = []
 new_pw = []
 stopped = 0
@@ -37,7 +34,7 @@ sha = hashlib.new('sha256')
 sha.update('THE_SENATE!')
 password = sha.hexdigest()
 responseContent = ''
-sendPort = 5002
+sendPort = 0
 streamStarted = 0
 
 def respond(key, value):
@@ -61,14 +58,14 @@ class GPIOThread(threading.Thread):
 				if new_pw[i] != current_pw[i]:
 					current_pw[i]=new_pw[i]
 					print "Setting ", i, " to ", new_pw[i]
-					if new_pw[i] >= 1000:
+					if new_pw[i] >= 500:
                                                 pi.set_servo_pulsewidth(i, new_pw[i])
                                         else:
                                                 pi.set_servo_pulsewidth(i, 0)
                                                 pi.write(i, not new_pw[i])
 			time.sleep(0.05)
 		print "GPIO output Terminated!"
-		
+
 gpioThread = GPIOThread("GPIO_thread")
 
 gpioThread.start()
@@ -87,11 +84,11 @@ class RespondThread(threading.Thread):
 		while not stopped:
                         respond("0", "1")#Inform the controller that the connection is alive
                         if len(verifiedAddress) and len(responseContent):
-                                responsesocket.sendto(responseContent, (verifiedAddress[0], sendPort))
+                                customsocket.sendto(responseContent, (verifiedAddress[0], sendPort))
                         responseContent = ""
                         time.sleep(1)
 		print "Response Thread Closing"
-		
+
 respondThread = RespondThread("RespondThread")
 
 respondThread.start()
@@ -117,27 +114,27 @@ class GPIOSocketThread(threading.Thread):
                                         i = 0
                                         beforeStart = -1
                                         for c in data:
-                                                val = (ord(c)-48)
+                                                val = (ord(c)-1)
                                                 if beforeStart != -1:
                                                         while len(new_pw) <= i + beforeStart:
                                                                 new_pw.append(0)
                                                                 current_pw.append(0)
                                                 if i == 0:
                                                         beforeStart = val - 1
-                                                elif val <= 100:
-                                                        pw = 1000 + 10 * val
-                                                        if new_pw[beforeStart + i] < 1000:
+                                                elif val <= 200:
+                                                        pw = 500 + 10 * val
+                                                        if new_pw[beforeStart + i] < 500:
                                                                 current_pw[beforeStart + i] = pw
                                                         new_pw[beforeStart + i] = pw
                                                 else:
-                                                        on = 0 if val == 101 else 1
+                                                        on = 0 if val == 201 else 1
                                                         new_pw[beforeStart + i] = on
                                                 i += 1
                         else:
                                 respond("error", "Unauthorized Address! GPIO Control not granted!")
                                 print "Unauthorized Address! GPIO Control not granted!"
         print "GPIO Socket Closing"
-		
+
 gpioSocketThread = GPIOSocketThread("GPIO_socket_thread")
 
 gpioSocketThread.start()
@@ -164,6 +161,7 @@ while not stopped:
                                 if customData == password:
                                         if not verifiedAddress or customAddress[0] == verifiedAddress[0]:
                                                 print "ACCESS GRANTED!"
+                                                sendPort = customAddress[1]
                                                 respond("access", "success")
                                                 verifiedAddress = customAddress
                                         else:
@@ -193,7 +191,7 @@ while not stopped:
                                                 os.system('./screenshot.sh')
                                                 respond("debug", "Screenshot taken!")
                                         elif customData == "ping":
-                                                responsesocket.sendto("|||ping:::ping", (verifiedAddress[0], sendPort))
+                                                customsocket.sendto("|||ping:::ping", (verifiedAddress[0], sendPort))
                                         else:
                                                 print "UNRECOGNIZED COMMAND: ", customData
                                                 respond("error", "UNRECOGNIZED COMMAND: ", customData)

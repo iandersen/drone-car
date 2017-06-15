@@ -36,67 +36,12 @@ public class Main {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(3000);
-					Debug.debug("Initializing control simulation");
-					lightTest();
-					servoTest();
-					motorTest();
+					Debug.debug("Connected");
 				} catch (Exception e) {
 					Debug.printStackTrace(e);
 				}
 			}
 		});//.start();
-	}
-
-	private static void motorTest() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					vehicle.getDevices()[1].setValue(50);
-					int i = 0;
-					while (true) {
-						vehicle.getDevices()[1].setValue(50 + i * 2);
-						i = i < 11 ? i + 1 : 0;
-						Thread.sleep(1000);
-					}
-				} catch (Exception e) {
-					Debug.printStackTrace(e);
-				}
-			}
-		}).start();
-	}
-
-	private static void servoTest() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						vehicle.getDevices()[0].setValue((int) Math.floor(Math.random() * 100));
-						Thread.sleep(1500);
-					}
-				} catch (Exception e) {
-					Debug.printStackTrace(e);
-				}
-			}
-		}).start();
-	}
-
-	private static void lightTest() {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while (true) {
-						vehicle.getDevices()[2].toggle();
-						Thread.sleep(500);
-					}
-				} catch (Exception e) {
-					Debug.printStackTrace(e);
-				}
-			}
-		}).start();
 	}
 
 	private static void init() {

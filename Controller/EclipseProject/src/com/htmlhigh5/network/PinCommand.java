@@ -4,11 +4,11 @@ public class PinCommand {
 	public static final int SIZE = 8; // 8 bit packets (value 0-255)
 	private boolean[] content = new boolean[SIZE];
 	private int value;
-	public static final int MIN_VALUE = 48;// Start as ASCII 0
+	public static final int MIN_VALUE = 1;// No null bytes
 
 	public PinCommand(int value) throws BadPacketSizeException {
 		this.value = value + MIN_VALUE;
-		if (value < 0 || value > 102)
+		if (value < 0 || value > 202)
 			throw new BadPacketSizeException(value);
 		else {
 			for (int i = SIZE - 1; i >= 0; i--)

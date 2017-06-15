@@ -42,8 +42,10 @@ public class GUIMain extends Application {
 		// Add a keyboard listener
 		pane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
-				if (!keysDown.contains(ke.getText()))
-					keysDown.add(ke.getText());
+				String text = ke.getText();
+				Main.userControl.keyPressed(text);
+				if (!keysDown.contains(text))
+					keysDown.add(text);
 			}
 		});
 
@@ -60,7 +62,7 @@ public class GUIMain extends Application {
 			public void run() {
 				try {
 					while (Main.vehicle.isRunning()) {
-						Main.userControl.keysPressed(keysDown);
+						Main.userControl.keysDown(keysDown);
 						Thread.sleep(30);
 					}
 				} catch (Exception e) {

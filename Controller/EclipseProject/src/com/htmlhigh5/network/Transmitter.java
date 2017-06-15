@@ -13,7 +13,7 @@ public class Transmitter {
 	private int gpioPort, customPort;
 	private String targetIP;
 	private DatagramSocket gpioSocket;
-	private DatagramSocket customSocket;
+	public DatagramSocket customSocket;
 	private boolean intialized = false;
 	
 	public Transmitter(){

@@ -19,11 +19,7 @@ public class Receiver {
 
 	public Receiver() {
 		this.port = Main.config.getInt("LISTEN_PORT");
-		try {
-			this.serverSocket = new DatagramSocket(this.port);
-		} catch (SocketException e) {
-			Debug.printStackTrace(e);
-		}
+		this.serverSocket = Main.transmitter.customSocket;
 	}
 
 	private void listen() throws Exception {
