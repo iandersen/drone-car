@@ -1,0 +1,4 @@
+TYPE = TOGGLE
+PIN = 
+TOGGLE_KEY = W
+NAME = Toggle

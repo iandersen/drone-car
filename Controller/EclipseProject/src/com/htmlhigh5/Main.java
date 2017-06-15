@@ -11,6 +11,7 @@ import com.htmlhigh5.gui.GUIMain;
 import com.htmlhigh5.network.CustomPacket;
 import com.htmlhigh5.network.Receiver;
 import com.htmlhigh5.network.Transmitter;
+import com.htmlhigh5.userControl.UserControl;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
 import com.htmlhigh5.vehicle.Vehicle;
 
@@ -19,12 +20,13 @@ public class Main {
 	public static Configuration vehicleConfig;
 	public static Transmitter transmitter;
 	public static Receiver receiver;
-	public static Vehicle vehicle;
+	public static Vehicle vehicle = new Vehicle();
+	public static UserControl userControl;
 	public static boolean connectionEstablished = false;
 
 	public static void main(String[] args) {
 		init(); // loading up config files
-		vehicle = new Vehicle();
+		userControl = new UserControl();
 		vehicle.start();
 		GUIMain.startGUI();
 	}
@@ -101,7 +103,10 @@ public class Main {
 		Configurations configs = new Configurations();
 		try {
 			config = configs.properties(new File("controller.properties"));
-			vehicleConfig = configs.properties(new File("vehicle.properties"));
+			File configDir = new File("Devices");
+			for(File c : configDir.listFiles()){
+				vehicle.addDevice(configs.properties(c));
+			}
 		} catch (ConfigurationException cex) {
 			Debug.printStackTrace(cex);
 		}

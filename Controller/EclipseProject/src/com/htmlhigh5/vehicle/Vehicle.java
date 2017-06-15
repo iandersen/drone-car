@@ -3,8 +3,12 @@ package com.htmlhigh5.vehicle;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.configuration2.Configuration;
+import org.apache.commons.configuration2.builder.fluent.Configurations;
 
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.ConfigErrorException;
@@ -14,7 +18,7 @@ import com.htmlhigh5.network.CustomPacket;
 
 public class Vehicle {
 	public int numDevices;
-	private GPIOComponent[] devices;
+	private ArrayList<GPIOComponent> devices = new ArrayList<GPIOComponent>();
 	private int[] pinNumbers;
 	private boolean running = false;
 	private ControlPacket packet;
@@ -91,7 +95,7 @@ public class Vehicle {
 						self.updatePacket();
 						Thread.sleep((int) (1000 * 1 / self.packetsPerSecond));
 						if (Main.receiver.isConnected) {
-							//Check the latency every three seconds
+							// Check the latency every three seconds
 							if (i >= self.packetsPerSecond * 3) {
 								i = 0;
 								Main.transmitter.sendCustomPacket(new CustomPacket("ping"));
@@ -120,14 +124,14 @@ public class Vehicle {
 	private void updatePacket() {
 		packet.clear();
 		for (int i = 0; i < this.numDevices; i++)
-			packet.setPin(this.pinNumbers[i], this.devices[i].getValue());
+			packet.setPin(this.pinNumbers[i], this.devices.get(i).getValue());
 	}
 
 	private void sendPacket() {
 		packet.send();
 	}
 
-	public GPIOComponent[] getDevices() {
+	public ArrayList<GPIOComponent> getDevices() {
 		return devices;
 	}
 
@@ -147,5 +151,9 @@ public class Vehicle {
 		} catch (NoSuchAlgorithmException e) {
 			Debug.printStackTrace(e);
 		}
+	}
+
+	public void addDevice(Configuration c) {
+		devices.add(new GPIOComponent(c));
 	}
 }
