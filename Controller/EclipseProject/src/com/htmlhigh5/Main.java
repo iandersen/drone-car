@@ -43,7 +43,7 @@ public class Main {
 					Debug.printStackTrace(e);
 				}
 			}
-		}).start();
+		});//.start();
 	}
 
 	private static void motorTest() {
