@@ -8,6 +8,9 @@ import java.util.ArrayList;
 
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
+import com.htmlhigh5.vehicle.BadGPIOValueException;
+import com.htmlhigh5.vehicle.GPIOComponent;
+
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -18,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyCode;
@@ -33,6 +37,8 @@ import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
 public class GUIMain extends Application {
+	private ArrayList<GPIOComponent> devices = Main.vehicle.getDevices();
+	
 	@Override
 	public void start(Stage stage) throws InterruptedException, URISyntaxException {
 		Pane pane = new Pane();
@@ -86,6 +92,25 @@ public class GUIMain extends Application {
 				}
 			}
 		});
+		
+		ScrollBar speedScroller = new ScrollBar();
+		speedScroller.setMax(devices.get(0).config.getInt("MAX_PW"));
+		System.out.println(devices.get(0).config.getInt("MAX_PW"));
+		speedScroller.setMin(devices.get(0).config.getInt("MIN_PW"));
+		speedScroller.setValue(speedScroller.getMax());
+		
+		speedScroller.valueProperty().addListener(ov -> {
+		      try {
+				devices.get(0).setValue((int)speedScroller.getValue());
+				System.out.println(devices.get(0).getValue());
+			} catch (BadGPIOValueException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	    });
+		
+		ToolBar settings = new ToolBar(speedScroller);
+		settings.setStyle("-fx-background-color: rgba(0,0,0,.12)");
 
 		WebView webView = new WebView();
 		WebEngine webEngine = webView.getEngine();
@@ -97,7 +122,7 @@ public class GUIMain extends Application {
 		webView.maxHeightProperty().bind(pane.heightProperty().divide(3));
 
 		Media media = new Media(
-		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
+		        "file:///D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
 		MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.setAutoPlay(true);
 
@@ -114,7 +139,7 @@ public class GUIMain extends Application {
 		controls.add(new Button("Right"), 2, 1);
 
 		controls.getStylesheets().add(
-		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/controlStyle.css");
+		        "file:///D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/controlStyle.css");
 		controls.setHgap(scene.getWidth() / 30);
 		controls.setVgap(scene.getHeight() / 30);
 
@@ -126,6 +151,7 @@ public class GUIMain extends Application {
 
 		borderPane.setBottom(controls);
 		borderPane.setLeft(webView);
+		borderPane.setRight(settings);
 		borderPane.setPadding(new Insets(10, 20, 10, 20));
 
 		mediaPlayer.play();

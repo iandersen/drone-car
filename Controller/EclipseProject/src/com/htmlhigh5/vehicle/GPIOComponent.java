@@ -13,7 +13,7 @@ public class GPIOComponent {
 	private String name;
 	private int pin;
 	private int value;
-	private Configuration config;
+	public Configuration config;
 	private int maxValue = -1;
 	private int minValue = -1;
 
