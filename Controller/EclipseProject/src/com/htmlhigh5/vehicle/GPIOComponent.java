@@ -1,5 +1,7 @@
 package com.htmlhigh5.vehicle;
 
+import java.util.ArrayList;
+
 import org.apache.commons.configuration2.Configuration;
 
 import com.htmlhigh5.debug.ConfigErrorException;
@@ -88,7 +90,6 @@ public class GPIOComponent {
 			int newValue = this.getValue() + val;
 			newValue = newValue > this.minValue ? newValue : this.minValue;
 			newValue = newValue < this.maxValue ? newValue : this.maxValue;
-			System.out.println(newValue);
 			setValue(newValue);
 		} catch (BadGPIOValueException e) {
 			Debug.printStackTrace(e);
@@ -120,12 +121,12 @@ public class GPIOComponent {
 		}
 	}
 
-	public void handleKeyDown(String key) {
+	public void handleKeyDown(ArrayList<String> keys) {
 		switch (this.type) {
 			case CAR_ESC:
-				if (key.equalsIgnoreCase(config.getString("ACCELERATE_KEY")))
+				if (keys.contains(config.getString("ACCELERATE_KEY").toLowerCase()))
 					this.modify(config.getInt("ACCELERATION_SPEED"));
-				else if (key.equalsIgnoreCase(config.getString("DECCELERATE_KEY")))
+				else if (keys.contains(config.getString("DECCELERATE_KEY").toLowerCase()))
 					this.modify(-config.getInt("ACCELERATION_SPEED"));
 				else
 					try {
@@ -135,9 +136,9 @@ public class GPIOComponent {
 					}
 			break;
 			case PLANE_ESC:
-				if (key.equalsIgnoreCase(config.getString("ACCELERATE_KEY")))
+				if (keys.contains(config.getString("ACCELERATE_KEY").toLowerCase()))
 					this.modify(config.getInt("ACCELERATION_SPEED"));
-				else if (key.equalsIgnoreCase(config.getString("DECCELERATE_KEY")))
+				else if (keys.contains(config.getString("DECCELERATE_KEY").toLowerCase()))
 					this.modify(-config.getInt("ACCELERATION_SPEED"));
 				else
 					try {
@@ -147,9 +148,9 @@ public class GPIOComponent {
 					}
 			break;
 			case SERVO:
-				if (key.equalsIgnoreCase(config.getString("CLOCKWISE_KEY")))
+				if (keys.contains(config.getString("CLOCKWISE_KEY").toLowerCase()))
 					this.modify(config.getInt("ROTATION_SPEED"));
-				else if (key.equalsIgnoreCase(config.getString("COUNTERCLOCKWISE_KEY")))
+				else if (keys.contains(config.getString("COUNTERCLOCKWISE_KEY").toLowerCase()))
 					this.modify(-config.getInt("ROTATION_SPEED"));
 			break;
 			case TOGGLE:

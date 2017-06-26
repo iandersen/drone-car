@@ -122,7 +122,7 @@ public class GUIMain extends Application {
 		webView.maxHeightProperty().bind(pane.heightProperty().divide(3));
 
 		Media media = new Media(
-		        "file:///D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
+		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
 		MediaPlayer mediaPlayer = new MediaPlayer(media);
 		mediaPlayer.setAutoPlay(true);
 
@@ -139,7 +139,7 @@ public class GUIMain extends Application {
 		controls.add(new Button("Right"), 2, 1);
 
 		controls.getStylesheets().add(
-		        "file:///D:/RC/Controller/EclipseProject/src/com/htmlhigh5/gui/controlStyle.css");
+		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/controlStyle.css");
 		controls.setHgap(scene.getWidth() / 30);
 		controls.setVgap(scene.getHeight() / 30);
 
