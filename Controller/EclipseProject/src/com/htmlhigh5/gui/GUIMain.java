@@ -100,13 +100,8 @@ public class GUIMain extends Application {
 		speedScroller.setValue(speedScroller.getMax());
 		
 		speedScroller.valueProperty().addListener(ov -> {
-		      try {
-				devices.get(0).setValue((int)speedScroller.getValue());
-				System.out.println(devices.get(0).getValue());
-			} catch (BadGPIOValueException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			devices.get(0).config.setProperty("MAX_PW", (int)speedScroller.getValue());
+			System.out.println(devices.get(0).config.getProperty("MAX_PW"));
 	    });
 		
 		ToolBar settings = new ToolBar(speedScroller);
