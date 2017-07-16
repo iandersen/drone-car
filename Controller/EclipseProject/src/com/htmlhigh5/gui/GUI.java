@@ -31,39 +31,39 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 
 public class GUI extends Exception{
-	private GridPane mainPane = new GridPane();
-//	private MapView mapView = new MapView();
-	
-	public GUI(){
-		paint();
-	}
-	
-	public GridPane getMainPane(){
-		return mainPane;
-	}
-	
-	public void paint(){
-		//mapInitialized();
-		Pane mapPane = new Pane();
-		Rectangle rect = new Rectangle(200, 150, Color.GREEN);
-//		mapPane.getChildren().add(mapView);
-		mainPane.add(mapPane, 1, 1);
-	}
-	
-	public void makeMap(){
-		//timed loop
-		updateMap();
-	}
-	
-	public void updateMap(){
-		
-	}
-	
-	public void startCameraFeed(){
-		
-	}
-	
-	public void takeScreenshot(){
-		
-	}
+    private GridPane mainPane = new GridPane();
+//    private MapView mapView = new MapView();
+    
+    public GUI(){
+        paint();
+    }
+    
+    public GridPane getMainPane(){
+        return mainPane;
+    }
+    
+    public void paint(){
+        //mapInitialized();
+        Pane mapPane = new Pane();
+        Rectangle rect = new Rectangle(200, 150, Color.GREEN);
+//        mapPane.getChildren().add(mapView);
+        mainPane.add(mapPane, 1, 1);
+    }
+    
+    public void makeMap(){
+        //timed loop
+        updateMap();
+    }
+    
+    public void updateMap(){
+        
+    }
+    
+    public void startCameraFeed(){
+        
+    }
+    
+    public void takeScreenshot(){
+        
+    }
 }

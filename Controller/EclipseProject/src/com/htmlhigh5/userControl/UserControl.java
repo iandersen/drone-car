@@ -10,18 +10,14 @@ import java.util.ArrayList;
 
 
 public class UserControl {
-	
-	public synchronized void keysDown(ArrayList<String> codes){
-		for(String code : codes)
-			for(GPIOComponent c : Main.vehicle.getDevices())
-				c.handleKeyDown(code);
-		if(codes.size() == 0)
-			for(GPIOComponent c : Main.vehicle.getDevices())
-				c.noKeyEvent();
-	}
-	
-	public void keyPressed(String code){
-		for(GPIOComponent c : Main.vehicle.getDevices())
-			c.handleKeyPressed(code);
-	}
+    
+    public synchronized void keysDown(ArrayList<String> codes){
+        for(GPIOComponent c : Main.vehicle.getDevices())
+            c.handleKeyDown(codes);
+    }
+    
+    public void keyPressed(String code){
+        for(GPIOComponent c : Main.vehicle.getDevices())
+            c.handleKeyPressed(code);
+    }
 }
