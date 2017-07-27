@@ -81,7 +81,7 @@ public class Receiver {
             Debug.debug("Connection established successfully!");
             Main.connectionEstablished = true;
             Main.onConnect();
-            Main.startStream();
+            //Main.startStream();
         } else if (response.equals("failure")) {
             Main.connectionEstablished = false;
             Debug.error(
