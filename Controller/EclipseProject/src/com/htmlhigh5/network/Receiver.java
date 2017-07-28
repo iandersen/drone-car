@@ -134,7 +134,7 @@ public class Receiver {
                     if (!this.hasConnected)
                         this.hasConnected = true;
                 }
-                if (secondsSinceConnection < 2)
+                if (secondsSinceConnection < 5)
                     this.isConnected = true;
                 else
                     this.isConnected = false;
