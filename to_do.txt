@@ -17,7 +17,7 @@ Find specific Arduino or knock-off Arduino boards that meet our requirements:
 		-Arduinos can also have their digital pins specified as in or out
 	-Python execution
 		-Arduino cannot run python, as it is a microcontroller, however witht he help of a
-		 wemos d1 mini esp8266, you can run python code and stream live video
+		 wemos d1 mini esp8266, you can run python code and stream live video. It also has integrated bluetooth and wifi
 
 Caleb:
 Document existing code
