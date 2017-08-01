@@ -9,9 +9,15 @@ Peter:
 Improve GUI appearance
 Find specific Arduino or knock-off Arduino boards that meet our requirements:
 	-Geolocation
+		-SIM900A
 	-3G/4G connection
+		-Cheap, but uses 2G connection SIM900A ~$20, could be good for prototyping
 	-GPIO pins
+		-All arduinos have gpio pines in the form of analog I/O
+		-Arduinos can also have their digital pins specified as in or out
 	-Python execution
+		-Arduino cannot run python, as it is a microcontroller, however witht he help of a
+		 wemos d1 mini esp8266, you can run python code and stream live video
 
 Caleb:
 Document existing code
