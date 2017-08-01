@@ -1,0 +1,18 @@
+To Do:
+
+Ian:
+Make sure the control stuff works
+Construct prototype electronics
+Fix problems he creates
+
+Peter:
+Improve GUI appearance
+Find specific Arduino or knock-off Arduino boards that meet our requirements:
+	-Geolocation
+	-3G/4G connection
+	-GPIO pins
+	-Python execution
+
+Caleb:
+Document existing code
+Make adjustments to bad logic (probably Ian's fault)
