@@ -93,6 +93,8 @@ public class GUIMain extends Application {
 			}
 		});
 		
+		//TO DO - Use an overlaying webview to use bootstrap with javafx - https://stackoverflow.com/questions/21268062/bootstrap-with-javafx
+		
 		ScrollBar speedScroller = new ScrollBar();
 		speedScroller.setMax(devices.get(0).config.getInt("MAX_PW"));
 		System.out.println(devices.get(0).config.getInt("MAX_PW"));
