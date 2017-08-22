@@ -1,92 +1,97 @@
-<head>
-<script src="jquery-3.2.1.min.js"></script>
+<html>
+  <head>
+  <script src="jquery-3.2.1.min.js"></script>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
-<style type="text/css">
-  #map_canvas { background-color: #666970;
-                height: 20em;
-                width: 20em;
-                transform: translate(5%, 5%);
-              }
-</style>
+  <style type="text/css">
+    #map_canvas { background-color: #666970;
+                  height: 20em;
+                  width: 20em;
+                  transform: translate(5%, 5%);
+                }
+  </style>
 
-<script  type="text/javascript" charset="UTF-8" >
+  <script  type="text/javascript" charset="UTF-8" >
 
-    /**
-     * Moves the map to display over Berlin
-     *
-     * @param  {H.Map} map      A HERE Map instance within the application
-     */
-    function moveMapToBerlin(map){
-      map.setCenter({lat:52.5159, lng:13.3777});
-      map.setZoom(14);
-    }
-
-
-
+      /**
+       * Moves the map to display over Berlin
+       *
+       * @param  {H.Map} map      A HERE Map instance within the application
+       */
+      function moveMapToBerlin(map){
+        map.setCenter({lat:52.5159, lng:13.3777});
+        map.setZoom(14);
+      }
 
 
-    /**
-     * Boilerplate map initialization code starts below:
-     */
 
-    //Step 1: initialize communication with the platform
-    var platform = new H.service.Platform({
-      app_id: 'DemoAppId01082013GAL',
-      app_code: 'AJKnXv84fjrb0KIHawS0Tg',
-      useCIT: true,
-      useHTTPS: true
-    });
-    var defaultLayers = platform.createDefaultLayers();
 
-    //Step 2: initialize a map  - not specificing a location will give a whole world view.
-    var map = new H.Map(document.getElementById('map'),
-      defaultLayers.normal.map);
 
-    //Step 3: make the map interactive
-    // MapEvents enables the event system
-    // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
-    var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+      /**
+       * Boilerplate map initialization code starts below:
+       */
 
-    // Create the default UI components
-    var ui = H.ui.UI.createDefault(map, defaultLayers);
+      //Step 1: initialize communication with the platform
+      var platform = new H.service.Platform({
+        app_id: 'DemoAppId01082013GAL',
+        app_code: 'AJKnXv84fjrb0KIHawS0Tg',
+        useCIT: true,
+        useHTTPS: true
+      });
+      var defaultLayers = platform.createDefaultLayers();
 
-    // Now use the map as required...
-    moveMapToBerlin(map);
-  </script>
-</head>
-<body style="overflow: hidden; background-color: #332222">
-  <div class="container-fixed">
-    <div>
-      <iframe id="map_canvas" src="https://wego.here.com/?map=30.65335,-88.1054,17,normal" sandboxs frameborder="0" style="border:0">>
-      </iframe>
-    </div>
-    <div class="dropdown" style="float: right; transform: translate(-1em, -19em)">
-      <div class="btn dropdown-toggle" style="padding: .5em; opacity: .5; background-color: #000000; border-radius: 100%;"  data-toggle="dropdown">
-        <img src="settings-icon.png" style="height: 5em;"></img>
+      //Step 2: initialize a map  - not specificing a location will give a whole world view.
+      var map = new H.Map(document.getElementById('map'),
+        defaultLayers.normal.map);
+
+      //Step 3: make the map interactive
+      // MapEvents enables the event system
+      // Behavior implements default interactions for pan/zoom (also on mobile touch environments)
+      var behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+
+      // Create the default UI components
+      var ui = H.ui.UI.createDefault(map, defaultLayers);
+
+      // Now use the map as required...
+      moveMapToBerlin(map);
+    </script>
+  </head>
+  <body style="overflow: hidden; background-color: transparent;">
+    <div class="container-fixed">
+      <video style="width: 100%;">
+        <source src="small.mp4" type="video/mp4">
+      </video>
+      <div style="position: absolute; left: 10px; top: 10px;">
+        <iframe id="map_canvas" src="https://wego.here.com/?map=30.65335,-88.1054,17,normal" frameborder="0" style="border:0">>
+        </iframe>
       </div>
-      <ul class="dropdown-menu dropdown-menu-right text-center" style="color: #ffffff; background-color: #666970; opacity: .5">
-        <li class="text-center">sample</li>
-        <li class="text-center">sample</li>
-        <li class="text-center">sample</li>
-      </ul>
-    </div>
-    <div class="col-lg-offset-6 col-lg-6 text-center row" style="transform: translate(17%, 75%)">
-      <div>
-        <img src="control_arrow.png" style="transform: rotate(90deg); width: 10em;" class="btn" name="up" value="UP"></button>
+      <div class="dropdown" style="position: absolute; top: 10px; right: 10px;">
+        <div class="btn dropdown-toggle" style="padding: .5em; opacity: .75; background-color: #000000; border-radius: 100%;"  data-toggle="dropdown">
+          <img src="settings-icon.png" style="height: 5em;"></img>
+        </div>
+        <ul class="dropdown-menu dropdown-menu-right text-center" style="color: #ffffff; background-color: #666970; opacity: .5">
+          <li class="text-center">sample</li>
+          <li class="text-center">sample</li>
+          <li class="text-center">sample</li>
+        </ul>
       </div>
-      <div>
-        <img src="control_arrow.png" style="width: 10em"class="btn" name="left" value="LEFT"></button>
-        <img src="control_arrow.png" style="transform: rotate(270deg); width: 10em" class="btn" name="down" value="DOWN"></button>
-        <img src="control_arrow.png" style="transform: rotate(180deg); width: 10em" class="btn" name="right"></button>
+      <div class="text-center row" style="position: absolute; bottom: 10px; right: 10px;">
+        <div>
+          <img src="control_arrow.png" style="-webkit-transform: rotate(90deg); width: 10em;" class="btn" name="up" value="UP"></button>
+        </div>
+        <div>
+          <img src="control_arrow.png" style="width: 10em"class="btn" name="left" value="LEFT"></button>
+          <img src="control_arrow.png" style="-webkit-transform: rotate(270deg); width: 10em" class="btn" name="down" value="DOWN"></button>
+          <img src="control_arrow.png" style="-webkit-transform: rotate(180deg); width: 10em" class="btn" name="right"></button>
+        </div>
       </div>
     </div>
-  </div>
-</body>
+  </body>
+</html>
