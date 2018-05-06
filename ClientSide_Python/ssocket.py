@@ -23,7 +23,7 @@ serversocket.bind(('', 5000))
 serversocket.setblocking(0)
 
 customsocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-customsocket.bind(('', 6001))
+customsocket.bind(('', 5001))
 customsocket.setblocking(0)
 
 current_pw = []
