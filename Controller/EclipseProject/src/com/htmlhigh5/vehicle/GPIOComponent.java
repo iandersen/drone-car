@@ -113,6 +113,12 @@ public class GPIOComponent {
 				}
 			break;
 			case SERVO:
+				System.out.println("NO KEY");
+				try {
+					this.setValue(100);
+				} catch (BadGPIOValueException e) {
+					Debug.printStackTrace(e);
+				}
 			break;
 			case TOGGLE:
 			break;
@@ -128,12 +134,13 @@ public class GPIOComponent {
 					this.modify(config.getInt("ACCELERATION_SPEED"));
 				else if (keys.contains(config.getString("DECCELERATE_KEY").toLowerCase()))
 					this.modify(-config.getInt("ACCELERATION_SPEED"));
-				else
+				else{
 					try {
 						this.setValue(100);
 					} catch (BadGPIOValueException e) {
 						Debug.printStackTrace(e);
 					}
+				}
 			break;
 			case PLANE_ESC:
 				if (keys.contains(config.getString("ACCELERATE_KEY").toLowerCase()))
@@ -149,9 +156,15 @@ public class GPIOComponent {
 			break;
 			case SERVO:
 				if (keys.contains(config.getString("CLOCKWISE_KEY").toLowerCase()))
-					this.modify(config.getInt("ROTATION_SPEED"));
-				else if (keys.contains(config.getString("COUNTERCLOCKWISE_KEY").toLowerCase()))
 					this.modify(-config.getInt("ROTATION_SPEED"));
+				else if (keys.contains(config.getString("COUNTERCLOCKWISE_KEY").toLowerCase()))
+					this.modify(config.getInt("ROTATION_SPEED"));
+				else
+					try {
+						this.setValue(100);
+					} catch (BadGPIOValueException e) {
+						Debug.printStackTrace(e);
+					}
 			break;
 			case TOGGLE:
 			break;
