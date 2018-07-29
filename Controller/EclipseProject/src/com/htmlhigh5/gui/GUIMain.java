@@ -6,6 +6,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Observer;
 
 import org.jcodec.codecs.h264.H264Decoder;
 import org.jcodec.common.model.ColorSpace;
@@ -15,6 +17,7 @@ import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
 import com.htmlhigh5.vehicle.GPIOComponent;
+import com.htmlhigh5.vehicle.GPIOType;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -24,8 +27,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToolBar;
@@ -35,6 +40,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -42,16 +48,29 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 
-public class GUIMain extends Application {
+public class GUIMain extends Application{
 	private ArrayList<GPIOComponent> devices = Main.vehicle.getDevices();
-	H264Decoder decoder = new H264Decoder();
-	Picture out = Picture.create(1920, 1088, ColorSpace.YUV420); // Allocate output frame of max size
-//	Picture real = decoder.decodeFrame(bb, out.getData());
+	private HashMap<GPIOComponent, ScrollBar> speedControllers = new HashMap<GPIOComponent, ScrollBar>();
+	private HashMap<GPIOComponent, CheckBox> toggleControllers = new HashMap<GPIOComponent, CheckBox>();
+	private Stage stage;
+	private Pane toolbarPane;
+	
+	private void forceUpdate(){
+		for(GPIOComponent device : this.devices){
+			if(device.getType() == GPIOType.TOGGLE){
+				CheckBox cb = toggleControllers.get(device);
+			}else{
+				ScrollBar sb = speedControllers.get(device);
+			}
+		}
+	}
+	
 	
 	@Override
 	public void start(Stage stage) throws InterruptedException, URISyntaxException {
+		this.stage = stage;
 		Pane pane = new Pane();
-		StackPane stackPane = new StackPane();
+		BorderPane borderPane = new BorderPane();
 		ArrayList<String> keysDown = new ArrayList<String>();
 
 		// Add a keyboard listener
@@ -71,13 +90,14 @@ public class GUIMain extends Application {
 					keysDown.remove(ke.getText());
 			}
 		});
-
+		GUIMain self = this;
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
 					while (Main.vehicle.isRunning()) {
 						Main.userControl.keysDown(keysDown);
+						self.forceUpdate();
 						Thread.sleep(30);
 					}
 				} catch (Exception e) {
@@ -86,10 +106,10 @@ public class GUIMain extends Application {
 			}
 		}).start();
 
-		stage.setTitle("Web Map");
-		Scene scene = new Scene(pane, 1500, 800);
+		stage.setTitle("Car Controller");
+		Scene scene = new Scene(pane, 600, 600);
 		stage.setScene(scene);
-	    stage.setResizable(false);
+	    stage.setResizable(true);
 		stage.show();
 		
 		//We need this so that if the user is pressing keys and then minimize the window, they keys will count as released
@@ -105,28 +125,19 @@ public class GUIMain extends Application {
 		
 		//TO DO - Use an overlaying webview to use bootstrap with javafx - https://stackoverflow.com/questions/21268062/bootstrap-with-javafx
 		
-		/*ScrollBar speedScroller = new ScrollBar();
-		speedScroller.setMax(devices.get(0).config.getInt("MAX_PW"));
-		System.out.println(devices.get(0).config.getInt("MAX_PW"));
-		speedScroller.setMin(devices.get(0).config.getInt("MIN_PW"));
-		speedScroller.setValue(speedScroller.getMax());
-		
-		speedScroller.valueProperty().addListener(ov -> {
-			devices.get(0).config.setProperty("MAX_PW", (int)speedScroller.getValue());
-			System.out.println(devices.get(0).config.getProperty("MAX_PW"));
-	    });
-		
-		ToolBar settings = new ToolBar(speedScroller);
-		settings.setStyle("-fx-background-color: rgba(0,0,0,.12)");*/
+		VBox allToolbars = new VBox();
+		this.addAllToolbarsToPane(allToolbars);
+		this.toolbarPane = allToolbars;
 
 		WebView webView = new WebView();
+		webView.maxWidth(400);
+		webView.maxHeight(400);
+		webView.setMaxHeight(400);
+		webView.setMaxWidth(400);
 		WebEngine webEngine = webView.getEngine();
 
 		URL url = getClass().getResource("controls.html");
 		webEngine.load(url.toExternalForm());
-
-		webView.maxWidthProperty().bind(pane.widthProperty());
-		webView.maxHeightProperty().bind(pane.heightProperty());
 		
 		WebView videoStream = new WebView();
 		WebEngine videoEngine = videoStream.getEngine();
@@ -139,25 +150,25 @@ public class GUIMain extends Application {
 			e.printStackTrace();
 		}
 
-//		Media media = new Media(
-//		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
-//		MediaPlayer mediaPlayer = new MediaPlayer(media);
-//		mediaPlayer.setAutoPlay(true);
-//
-//		MediaView mediaView = new MediaView(mediaPlayer);
-//		mediaView.fitWidthProperty().bind(scene.widthProperty());
+		borderPane.prefWidthProperty().bind(scene.widthProperty());
+		borderPane.prefHeightProperty().bind(scene.heightProperty());
 
-		//pane.getChildren().add(mediaView);
-
-		stackPane.prefWidthProperty().bind(scene.widthProperty());
-		stackPane.prefHeightProperty().bind(scene.heightProperty());
-
-		stackPane.getChildren().addAll(webView);
-		//borderPane.setRight(settings);
+		borderPane.setTop(webView);
+		borderPane.setCenter(allToolbars);
+		borderPane.setStyle("-fx-background-color: #333");
 		
-		pane.getChildren().add(stackPane);
+		pane.getChildren().add(borderPane);
 
 		//mediaPlayer.play();
+	}
+	
+	private void addAllToolbarsToPane(Pane pane){
+		for(GPIOComponent device : this.devices){
+			Node switcher = null;
+			ToolBar settings;
+			ComponentStatusPanel panel = new ComponentStatusPanel(device);
+			pane.getChildren().addAll(panel.getChildren());
+		}
 	}
 
 	public static void startGUI() {
