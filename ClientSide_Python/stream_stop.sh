@@ -1,1 +1,3 @@
-pkill vlc
+#pkill vlc
+pkill raspivid
+pkill nc
