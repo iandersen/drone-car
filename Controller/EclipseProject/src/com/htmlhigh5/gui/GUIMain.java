@@ -7,6 +7,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import org.jcodec.codecs.h264.H264Decoder;
+import org.jcodec.common.model.ColorSpace;
+import org.jcodec.common.model.Picture;
+
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.vehicle.BadGPIOValueException;
@@ -40,6 +44,9 @@ import javafx.stage.Stage;
 
 public class GUIMain extends Application {
 	private ArrayList<GPIOComponent> devices = Main.vehicle.getDevices();
+	H264Decoder decoder = new H264Decoder();
+	Picture out = Picture.create(1920, 1088, ColorSpace.YUV420); // Allocate output frame of max size
+//	Picture real = decoder.decodeFrame(bb, out.getData());
 	
 	@Override
 	public void start(Stage stage) throws InterruptedException, URISyntaxException {
@@ -132,13 +139,13 @@ public class GUIMain extends Application {
 			e.printStackTrace();
 		}
 
-		/*Media media = new Media(
-		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
-		MediaPlayer mediaPlayer = new MediaPlayer(media);
-		mediaPlayer.setAutoPlay(true);
-
-		MediaView mediaView = new MediaView(mediaPlayer);
-		mediaView.fitWidthProperty().bind(scene.widthProperty());*/
+//		Media media = new Media(
+//		        "file:///C:/Users/Ian/Documents/GitHub/drone-car/Controller/EclipseProject/src/com/htmlhigh5/gui/small.mp4");
+//		MediaPlayer mediaPlayer = new MediaPlayer(media);
+//		mediaPlayer.setAutoPlay(true);
+//
+//		MediaView mediaView = new MediaView(mediaPlayer);
+//		mediaView.fitWidthProperty().bind(scene.widthProperty());
 
 		//pane.getChildren().add(mediaView);
 
