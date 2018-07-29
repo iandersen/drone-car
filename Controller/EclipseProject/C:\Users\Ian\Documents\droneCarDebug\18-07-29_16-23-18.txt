@@ -1,0 +1,7 @@
+[16:23:18]: Saving log files to C:\Users\Ian\Documents\droneCarDebug\
+[16:23:18]: Vehicle intialized!
+[16:23:18]: Receiver listening on port 5002
+[16:23:18]: Attempting to connect...
+[16:23:19]: Connection established successfully!
+[16:23:19]: Starting Stream...
+[16:23:20]: WARNING!: Stream already started!
