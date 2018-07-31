@@ -79,7 +79,7 @@ public class Main {
 	}
 
 	public static void startStream() {
-		Debug.debug("Starting Stream...");
+		//Debug.debug("Starting Stream...");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

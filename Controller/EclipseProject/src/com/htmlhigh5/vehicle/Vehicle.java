@@ -16,6 +16,13 @@ import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.network.ControlPacket;
 import com.htmlhigh5.network.CustomPacket;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Vehicle {
     public int numDevices;
     private ArrayList<GPIOComponent> devices = new ArrayList<GPIOComponent>();
@@ -24,6 +31,7 @@ public class Vehicle {
     private ControlPacket packet;
     private int packetsPerSecond;
     public long pingSendTime = 0;
+    public StringProperty latLonProperty = new SimpleStringProperty("34.438855,-118.553971");
 
     public void start() {
         this.packetsPerSecond = Main.config.getInt("PACKETS_PER_SECOND");
@@ -56,7 +64,7 @@ public class Vehicle {
                         } else {
                             Debug.debug("Attempting to connect...");
                             self.sendInitPacket();
-                            Thread.sleep(4000);
+                            Thread.sleep(3000);
                         }
                         i++;
                     } catch (InterruptedException e) {
@@ -65,6 +73,30 @@ public class Vehicle {
                 }
             }
         }).start();
+    }
+    
+    public double getLat(){
+    	return Double.parseDouble(this.latLonProperty.get().split(",")[0]);
+    }
+    
+    public double getLon(){
+    	return Double.parseDouble(this.latLonProperty.get().split(",")[1]);
+    }
+    
+    public void setLat(double lat){
+    	this.setLatLon(lat, this.getLon());
+    }
+    
+    public void setLon(double lon){
+    	this.setLatLon(this.getLat(), lon);
+    }
+    
+    public void setLatLon(double lat, double lon){
+    	this.latLonProperty.set(lat+","+lon);
+    }
+    
+    public void setLatLon(String latLon){
+    	this.latLonProperty.set(latLon);
     }
 
     public void stop() {
