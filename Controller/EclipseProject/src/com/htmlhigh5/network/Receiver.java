@@ -74,6 +74,10 @@ public class Receiver {
         if (keyPairs.get("error") != null) {
             Debug.error(keyPairs.get("error"));
         }
+        
+        if(keyPairs.get("loc") != null){
+        	Main.vehicle.setLatLon(keyPairs.get("loc"));
+        }
     }
 
     private void handleAccess(String response) {

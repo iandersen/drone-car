@@ -55,7 +55,7 @@ public class MapPane implements MapComponentInitializedListener {
 		// Set the initial properties of the map.
 		MapOptions mapOptions = new MapOptions();
 
-		mapOptions.center(new LatLong(47.6097, -122.3331)).mapType(MapTypeIdEnum.ROADMAP).overviewMapControl(false)
+		mapOptions.center(new LatLong(34.438855, -118.553971)).mapType(MapTypeIdEnum.ROADMAP).overviewMapControl(false)
 				.panControl(false).rotateControl(false).scaleControl(false).streetViewControl(false).zoomControl(false)
 				.zoom(12);
 		this.map = mapView.createMap(mapOptions);

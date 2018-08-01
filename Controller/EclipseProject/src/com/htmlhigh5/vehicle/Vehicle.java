@@ -31,7 +31,7 @@ public class Vehicle {
     private ControlPacket packet;
     private int packetsPerSecond;
     public long pingSendTime = 0;
-    public StringProperty latLonProperty = new SimpleStringProperty("47.6097,-122.3331");
+    public StringProperty latLonProperty = new SimpleStringProperty("34.438855,-118.553971");
 
     public void start() {
         this.packetsPerSecond = Main.config.getInt("PACKETS_PER_SECOND");
@@ -93,6 +93,10 @@ public class Vehicle {
     
     public void setLatLon(double lat, double lon){
     	this.latLonProperty.set(lat+","+lon);
+    }
+    
+    public void setLatLon(String latLon){
+    	this.latLonProperty.set(latLon);
     }
 
     public void stop() {
