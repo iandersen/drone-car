@@ -156,7 +156,7 @@ public class GPIOComponent{
 				this.modify(-config.getInt("ACCELERATION_SPEED"));
 			else {
 				try {
-					this.setValue(100);
+					this.setValue(config.getInt("RESTING_PW"));
 				} catch (BadGPIOValueException e) {
 					Debug.printStackTrace(e);
 				}
@@ -169,7 +169,7 @@ public class GPIOComponent{
 				this.modify(-config.getInt("ACCELERATION_SPEED"));
 			else
 				try {
-					this.setValue(100);
+					this.setValue(config.getInt("RESTING_PW"));
 				} catch (BadGPIOValueException e) {
 					Debug.printStackTrace(e);
 				}
@@ -181,7 +181,7 @@ public class GPIOComponent{
 				this.modify(config.getInt("ROTATION_SPEED"));
 			else
 				try {
-					this.setValue(100);
+					this.setValue(config.getInt("RESTING_PW"));
 				} catch (BadGPIOValueException e) {
 					Debug.printStackTrace(e);
 				}

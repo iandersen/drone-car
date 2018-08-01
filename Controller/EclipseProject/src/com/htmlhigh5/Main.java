@@ -79,7 +79,7 @@ public class Main {
 	}
 
 	public static void startStream() {
-		Debug.debug("Starting Stream...");
+		//Debug.debug("Starting Stream...");
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -91,7 +91,7 @@ public class Main {
 				}
 			}
 		}).start();
-		transmitter.sendCustomPacket(new CustomPacket("stream_start"));
+		//transmitter.sendCustomPacket(new CustomPacket("stream_start"));
 	}
 
 	private static void listenTcp() throws Exception {
