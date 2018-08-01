@@ -40,17 +40,11 @@ public class ComponentStatusPanel extends Pane {
 			speedScroller.setValue(device.getValue());
 			
 			speedScroller.valueProperty().addListener(ov -> {
-				try {
-					device.setValue((int)speedScroller.getValue());
-				} catch (BadGPIOValueException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				device.setRestValue((int)speedScroller.getValue());
 		    });
 			Text valueText = new Text("Value: " + device.getValue());
 			device.valueProperty.addListener(ov -> {
 				valueText.setText("Value: " + device.getValue());
-				speedScroller.setValue(device.getValue());
 			});
 			this.getChildren().add(new ToolBar(new Text(device.getName()), valueText,
 					new Text("Min: " + device.getMin()),
