@@ -25,6 +25,8 @@ public class MapPane implements MapComponentInitializedListener {
 	public double lon = 0;
 	public double lastLat = 0;
 	public double lastLon = 0;
+	private CircleOptions locationMarkerOptions; 
+	private Circle locationMarker;
 
 	public MapPane(GoogleMap map, GoogleMapView mapView) {
 		this.map = map;
@@ -34,7 +36,6 @@ public class MapPane implements MapComponentInitializedListener {
 	}
 
 	public void updateMap() {
-		CircleOptions shapeOptions = new CircleOptions();
 		PolylineOptions lineOptions = new PolylineOptions();
 		if (this.lastLon != 0) {
 			MVCArray lastTwoPoints = new MVCArray();
@@ -45,8 +46,7 @@ public class MapPane implements MapComponentInitializedListener {
 		}
 		this.lastLat = this.lat;
 		this.lastLon = this.lon;
-		shapeOptions.center(new LatLong(this.lat, this.lon)).visible(true).fillColor("#ff0000").radius(10);
-		this.map.addMapShape(new Circle(shapeOptions));
+		locationMarker.setCenter(new LatLong(this.lat, this.lon));
 		this.map.setCenter(new LatLong(this.lat, this.lon));
 	}
 
@@ -59,6 +59,9 @@ public class MapPane implements MapComponentInitializedListener {
 				.panControl(false).rotateControl(false).scaleControl(false).streetViewControl(false).zoomControl(false)
 				.zoom(12);
 		this.map = mapView.createMap(mapOptions);
+		locationMarkerOptions = new CircleOptions().visible(true).fillColor("#ff0000").radius(2);
+		locationMarker = new Circle(locationMarkerOptions);
+		this.map.addMapShape(locationMarker);
 	}
 
 }
