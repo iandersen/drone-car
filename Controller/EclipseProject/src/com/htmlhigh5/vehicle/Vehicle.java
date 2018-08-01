@@ -32,6 +32,11 @@ public class Vehicle {
     private int packetsPerSecond;
     public long pingSendTime = 0;
     public StringProperty latLonProperty = new SimpleStringProperty("34.438855,-118.553971");
+    public DoubleProperty mphProperty = new SimpleDoubleProperty(0);
+    public DoubleProperty altitudeProperty = new SimpleDoubleProperty(0);
+    public double topSpeed = 0;
+    public double highestAltitude = Double.MIN_VALUE;
+    public double lowestAltitude = Double.MAX_VALUE;
 
     public void start() {
         this.packetsPerSecond = Main.config.getInt("PACKETS_PER_SECOND");
@@ -97,6 +102,29 @@ public class Vehicle {
     
     public void setLatLon(String latLon){
     	this.latLonProperty.set(latLon);
+    }
+    
+    public void setSpeedMPS(double mps){
+    	this.mphProperty.set(mps * 2.2369);
+    	this.topSpeed = Math.max(topSpeed, this.mphProperty.get());
+    }
+    
+    public void setSpeedMPH(double mph){
+    	this.mphProperty.set(mph);
+    }
+    
+    public double getMPH(){
+    	return this.mphProperty.get();
+    }
+    
+    public double getAltitude(){
+    	return this.altitudeProperty.get();
+    }
+    
+    public void setAltitude(double meters){
+    	this.altitudeProperty.set(meters);
+    	this.highestAltitude = Math.max(highestAltitude, meters);
+    	this.lowestAltitude = Math.min(lowestAltitude, meters);
     }
 
     public void stop() {

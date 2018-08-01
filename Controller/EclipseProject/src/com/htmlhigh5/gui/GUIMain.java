@@ -155,6 +155,7 @@ public class GUIMain extends Application {
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 
 		borderPane.setTop(mapView);
+		borderPane.setLeft(new VehicleStatusPanel());
 		borderPane.setCenter(allToolbars);
 		borderPane.setStyle("-fx-background-color: #333");
 
