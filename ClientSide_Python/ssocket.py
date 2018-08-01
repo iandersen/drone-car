@@ -6,6 +6,7 @@ import atexit
 import select
 import hashlib
 import os
+from gps3 import gps3
 
 #time.sleep(10)
 #connect to pigpiod daemon
@@ -16,8 +17,8 @@ pi = pigpio.pi()
 
 
 for i in range(2, 27):
-	pi.set_mode(i, pigpio.OUTPUT)
-	pi.write(i, 1)
+    pi.set_mode(i, pigpio.OUTPUT)
+    pi.write(i, 1)
 
 serversocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 serversocket.bind(('', 5000))
@@ -38,74 +39,124 @@ responseContent = ''
 sendPort = 0
 streamStarted = 0
 
+#GPS Things
+lat = 0;
+lon = 0;
+alt = 0;
+gpsTime = '0';
+gpsSpeed = 0;
+climb = 0;
+hasConnectedToGPS = 0;
+
+class GpsPoller(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.socket = gps3.GPSDSocket()
+        self.stream = gps3.DataStream()
+        self.socket.connect()
+        self.socket.watch()
+        self.running = True
+        print "Initializing GPS"
+    def run(self):
+        global lat
+        global lon
+        global alt
+        global gpsTime
+        global climb
+        global gpsSpeed
+        global hasConnectedToGPS
+        global stopped
+        while not stopped:
+            for new_data in self.socket:
+                if new_data:
+                    self.stream.unpack(new_data)
+                    lat = self.stream.TPV['lat']
+                    lon = self.stream.TPV['lon']
+                    alt = self.stream.TPV['alt']
+                    gpsTime = self.stream.TPV['time']
+                    gpsSpeed = self.stream.TPV['speed']
+                    climb = self.stream.TPV['climb']
+                    if lat != 'n/a':
+                        print(str(lat)+','+str(lon))
+                        respond('position',str(lat)+','+str(lon))
+                        respond('speed',str(gpsSpeed))
+                        respond('alt',str(alt))
+                    if hasConnectedToGPS == 0 and lat != 'n/a':
+                        hasConnectedToGPS = 1
+                        print 'GPS Connection Established!'
+
+gpsp = GpsPoller()
+gpsp.start()
+
 def respond(key, value):
+        print "Responding " + str(key) + ", " + str(value)
         global responseContent
         responseContent += "|||" + key + ":::" + value
 
 class GPIOThread(threading.Thread):
-     def __init__(self, name):
-	threading.Thread.__init__(self)
-	self.name = name
+    def __init__(self, name):
+        threading.Thread.__init__(self)
+        self.name = name
         print "GPIO Control Thread Initialized!"
 
-     def run(self):
-		global pw
-		global pulsewidth
-		global pi
-		global stopped
-		while not stopped:
-			m=0
-			for i in range(2, len(new_pw)):
-				if new_pw[i] != current_pw[i]:
-					current_pw[i]=new_pw[i]
-					print "Setting ", i, " to ", new_pw[i]
-					if new_pw[i] >= 500:
-                                                pi.set_servo_pulsewidth(i, new_pw[i])
-                                        else:
-                                                pi.set_servo_pulsewidth(i, 0)
-                                                pi.write(i, not new_pw[i])
-			time.sleep(0.05)
-		print "GPIO output Terminated!"
+    def run(self):
+        global pw
+        global pulsewidth
+        global pi
+        global stopped
+        while not stopped:
+            m=0
+            for i in range(2, len(new_pw)):
+                if new_pw[i] != current_pw[i]:
+                    current_pw[i]=new_pw[i]
+                    print "Setting ", i, " to ", new_pw[i]
+                    if new_pw[i] >= 500:
+                        pi.set_servo_pulsewidth(i, new_pw[i])
+                    else:
+                        pi.set_servo_pulsewidth(i, 0)
+                        pi.write(i, not new_pw[i])
+            time.sleep(0.05)
+        print "GPIO output Terminated!"
 
 gpioThread = GPIOThread("GPIO_thread")
 
 gpioThread.start()
 
 class RespondThread(threading.Thread):
-     def __init__(self, name):
-	threading.Thread.__init__(self)
-	self.name = name
+    def __init__(self, name):
+        threading.Thread.__init__(self)
+        self.name = name
         print "Respond Thread Initialized!"
 
-     def run(self):
-		global responseContent
-		global sendPort
-		global verifiedAddress
-		global stopped
-		while not stopped:
+    def run(self):
+        global responseContent
+        global sendPort
+        global verifiedAddress
+        global stopped
+        while not stopped:
                         respond("0", "1")#Inform the controller that the connection is alive
                         if len(verifiedAddress) and len(responseContent):
                                 customsocket.sendto(responseContent, (verifiedAddress[0], sendPort))
                         responseContent = ""
                         time.sleep(1)
-		print "Response Thread Closing"
+        print "Response Thread Closing"
 
 respondThread = RespondThread("RespondThread")
 
 respondThread.start()
 
 class GPIOSocketThread(threading.Thread):
-     def __init__(self, name):
-	threading.Thread.__init__(self)
-	self.name = name
+    def __init__(self, name):
+        threading.Thread.__init__(self)
+        self.name = name
         print "GPIO Socket Thread Initialized!"
 
-     def run(self):
-	global verifiedAddress
-	global new_pw
-	global current_pw
-	global stopped
-	while not stopped:
+    def run(self):
+        global verifiedAddress
+        global new_pw
+        global current_pw
+        global stopped
+        while not stopped:
                 time.sleep(0.05)
                 ready = select.select([serversocket], [], [], 1)
                 if ready[0]:
@@ -141,20 +192,20 @@ gpioSocketThread = GPIOSocketThread("GPIO_socket_thread")
 gpioSocketThread.start()
 
 def close():
-	print "\n\n -- Shutting Down --"
-	global stopped
-	global streamStarted
-	#stop pigpio
-	stopped = 1
-	if streamStarted:
+    print "\n\n -- Shutting Down --"
+    global stopped
+    global streamStarted
+    #stop pigpio
+    stopped = 1
+    if streamStarted:
                 os.system('./stream_stop.sh')
                 print "Stopping Stream"
-	for i in range(2, len(new_pw)):
-		pi.set_servo_pulsewidth(i, 0)
-		pi.write(i, 1)
+    for i in range(2, len(new_pw)):
+        pi.set_servo_pulsewidth(i, 0)
+        pi.write(i, 1)
 
 while not stopped:
-	try:
+    try:
                 ready = select.select([customsocket], [], [], 1)
                 if ready[0]:
                         customData, customAddress = customsocket.recvfrom(1024)
@@ -196,5 +247,5 @@ while not stopped:
                                         else:
                                                 print "UNRECOGNIZED COMMAND: ", customData
                                                 respond("error", "UNRECOGNIZED COMMAND: ", customData)
-	except(KeyboardInterrupt,SystemExit):
-		close()
+    except(KeyboardInterrupt,SystemExit):
+        close()
