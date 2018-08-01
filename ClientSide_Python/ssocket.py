@@ -7,6 +7,7 @@ import select
 import hashlib
 import os
 
+#time.sleep(10)
 #connect to pigpiod daemon
 pi = pigpio.pi()
 
