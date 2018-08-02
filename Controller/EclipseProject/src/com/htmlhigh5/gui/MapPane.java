@@ -45,7 +45,7 @@ public class MapPane implements MapComponentInitializedListener {
 			MVCArray lastTwoPoints = new MVCArray();
 			lastTwoPoints.push(new LatLong(this.lastLat, this.lastLon));
 			lastTwoPoints.push(new LatLong(this.lat, this.lon));
-			lineOptions.path(lastTwoPoints).strokeColor("#FF0000").visible(true).strokeWeight(2);
+			lineOptions.path(lastTwoPoints).strokeColor("#FF0000").visible(true).strokeWeight(2).draggable(false);
 			Polyline line = new Polyline(lineOptions);
 			allShapes.add(line);
 			this.map.addMapShape(line);
@@ -70,9 +70,9 @@ public class MapPane implements MapComponentInitializedListener {
 
 		mapOptions.center(new LatLong(34.438, -118.553)).mapType(MapTypeIdEnum.ROADMAP).overviewMapControl(false)
 				.panControl(false).rotateControl(false).scaleControl(false).streetViewControl(false).zoomControl(false)
-				.zoom(17);
+				.zoom(17).styleString("[{'featureType':'all','elementType':'labels.text.fill','stylers':[{'color':'#ffffff'}]},{'featureType':'all','elementType':'labels.text.stroke','stylers':[{'color':'#000000'},{'lightness':13}]},{'featureType':'administrative','elementType':'geometry.fill','stylers':[{'color':'#000000'}]},{'featureType':'administrative','elementType':'geometry.stroke','stylers':[{'color':'#144b53'},{'lightness':14},{'weight':1.4}]},{'featureType':'landscape','elementType':'all','stylers':[{'color':'#08304b'}]},{'featureType':'poi','elementType':'geometry','stylers':[{'color':'#0c4152'},{'lightness':5}]},{'featureType':'road.highway','elementType':'geometry.fill','stylers':[{'color':'#000000'}]},{'featureType':'road.highway','elementType':'geometry.stroke','stylers':[{'color':'#0b434f'},{'lightness':25}]},{'featureType':'road.arterial','elementType':'geometry.fill','stylers':[{'color':'#000000'}]},{'featureType':'road.arterial','elementType':'geometry.stroke','stylers':[{'color':'#0b3d51'},{'lightness':16}]},{'featureType':'road.local','elementType':'geometry','stylers':[{'color':'#000000'}]},{'featureType':'transit','elementType':'all','stylers':[{'color':'#146474'}]},{'featureType':'water','elementType':'all','stylers':[{'color':'#021019'}]}]");
 		this.map = mapView.createMap(mapOptions);
-		locationMarkerOptions = new CircleOptions().visible(true).fillColor("#ff0000").radius(2);
+		locationMarkerOptions = new CircleOptions().visible(true).fillColor("#ff0000").radius(2).draggable(false);
 		locationMarker = new Circle(locationMarkerOptions);
 		this.map.addMapShape(locationMarker);
 	}

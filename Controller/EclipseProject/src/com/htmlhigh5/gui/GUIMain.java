@@ -1,5 +1,6 @@
 package com.htmlhigh5.gui;
 
+import java.awt.Paint;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -24,11 +25,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.ToolBar;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 //import javafx.scene.web.WebEngine;
 //import javafx.scene.web.WebView;
 import javafx.stage.Stage;
@@ -129,14 +135,33 @@ public class GUIMain extends Application {
 		VBox allToolbars = new VBox();
 		this.addAllToolbarsToPane(allToolbars);
 		this.toolbarPane = allToolbars;
+		
+		VBox console = new VBox();
+		ScrollPane consoleContainer = new ScrollPane(console);
+		consoleContainer.setPrefHeight(150);
+		console.setStyle("-fx-background-color: #333");
+		consoleContainer.setStyle("-fx-background: #333");
+		consoleContainer.setVbarPolicy(ScrollBarPolicy.ALWAYS);
+		Text t = new Text(Debug.getLogText());
+		t.setFill(Color.WHITE);
+		console.getChildren().add(t);
+		Debug.logText.addListener(ev -> {
+			Platform.runLater(() -> {
+				Text txt = new Text(Debug.getLogText());
+				txt.setFill(Color.WHITE);
+				console.getChildren().add(txt);
+				consoleContainer.setVvalue(1.0);
+			});
+		});
 
 
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
-
+		mapView.setStyle("-fx-background: #333");
 		borderPane.setTop(new VBox(mapView, resetMapButton));
 		borderPane.setLeft(new VehicleStatusPanel());
-		borderPane.setCenter(allToolbars);
+		borderPane.setRight(allToolbars);
+		borderPane.setBottom(consoleContainer);
 		borderPane.setStyle("-fx-background-color: #333");
 
 		pane.getChildren().add(borderPane);

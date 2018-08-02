@@ -10,6 +10,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import com.htmlhigh5.Main;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Debug {
     private static boolean ERROR = true;
     private static boolean WARN = true;
@@ -17,6 +20,7 @@ public class Debug {
 
     private static String debugFolder;
     private static FileWriter fw;
+    public static StringProperty logText = new SimpleStringProperty("Log:");
 
     private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -87,6 +91,10 @@ public class Debug {
         Debug.error(ret);
         return ret;
     }
+    
+    public static String getLogText(){
+    	return logText.get();
+    }
 
     public static String log(String text) {
         if (text == null || text.isEmpty())
@@ -96,6 +104,7 @@ public class Debug {
             ret += timeFormat.format(new Date());
             ret += "]: ";
             ret += text;
+            logText.set(ret);
             ret += System.getProperty("line.separator");
             fw.append(ret);
             fw.flush();
