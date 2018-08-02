@@ -3,9 +3,6 @@ package com.htmlhigh5.userControl;
 import com.htmlhigh5.Main;
 import com.htmlhigh5.vehicle.*;
 
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-
 import java.util.ArrayList;
 
 

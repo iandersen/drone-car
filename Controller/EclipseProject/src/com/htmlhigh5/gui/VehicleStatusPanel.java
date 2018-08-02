@@ -22,13 +22,15 @@ public class VehicleStatusPanel extends VBox {
 		Text maxSpeedText = new Text("Top Speed: " + prettify(vehicle.topSpeed));
 		Text highestAltText = new Text("Highest Altitude: " + prettify(vehicle.highestAltitude));
 		Text lowestAltText = new Text("Lowest Altitude: " + prettify(vehicle.lowestAltitude));
+		Text latencyText = new Text("Latency: " + Main.receiver.getLatency()+"ms");
 		Button resetButton = new Button("Reset");
 		speedText.setFill(Color.WHITE);
 		altitudeText.setFill(Color.WHITE);
 		maxSpeedText.setFill(Color.WHITE);
 		highestAltText.setFill(Color.WHITE);
 		lowestAltText.setFill(Color.WHITE);
-		this.getChildren().addAll(speedText, altitudeText, maxSpeedText,highestAltText,lowestAltText,resetButton);
+		latencyText.setFill(Color.LIGHTSALMON);
+		this.getChildren().addAll(speedText, altitudeText, maxSpeedText,highestAltText,lowestAltText,latencyText,resetButton);
 		vehicle.mphProperty.addListener(ov -> {
 			speedText.setText("Speed (MPH): " + prettify(vehicle.getMPH()));
 			maxSpeedText.setText("Top Speed: " + prettify(vehicle.topSpeed));
@@ -37,6 +39,9 @@ public class VehicleStatusPanel extends VBox {
 			altitudeText.setText("Altitude (M): " + prettify(vehicle.getAltitude()));
 			highestAltText.setText("Highest Altitude: " + prettify(vehicle.highestAltitude));
 			lowestAltText.setText("Lowest Altitude: " + prettify(vehicle.lowestAltitude));
+		});
+		Main.receiver.latencyProperty.addListener(ev -> {
+			latencyText.setText("Latency: " + Main.receiver.getLatency()+"ms");
 		});
 		resetButton.setOnAction(ev -> {
 			vehicle.resetStats();

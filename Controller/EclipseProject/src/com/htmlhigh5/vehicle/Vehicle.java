@@ -8,25 +8,20 @@ import java.util.ArrayList;
 import javax.xml.bind.DatatypeConverter;
 
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.builder.fluent.Configurations;
 
 import com.htmlhigh5.Main;
-import com.htmlhigh5.debug.ConfigErrorException;
 import com.htmlhigh5.debug.Debug;
 import com.htmlhigh5.network.ControlPacket;
 import com.htmlhigh5.network.CustomPacket;
 
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Vehicle {
     public int numDevices;
     private ArrayList<GPIOComponent> devices = new ArrayList<GPIOComponent>();
-    private int[] pinNumbers;
     private boolean running = false;
     private ControlPacket packet;
     private int packetsPerSecond;

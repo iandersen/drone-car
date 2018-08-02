@@ -2,25 +2,31 @@ package com.htmlhigh5.network;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.HashMap;
 import java.util.Scanner;
 
 import com.htmlhigh5.Main;
 import com.htmlhigh5.debug.Debug;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+
 public class Receiver {
 	private int port;
 	private DatagramSocket serverSocket;
 	private boolean stopped = true;
 	private boolean ping = false;
+	public IntegerProperty latencyProperty = new SimpleIntegerProperty();
 	public boolean hasConnected = false;
 	public boolean isConnected = false;
-	private long latency = -1;
 
 	public Receiver() {
 		this.port = Main.config.getInt("LISTEN_PORT");
 		this.serverSocket = Main.transmitter.customSocket;
+	}
+	
+	public int getLatency(){
+		return latencyProperty.get();
 	}
 
 	private void listen() throws Exception {
@@ -53,7 +59,7 @@ public class Receiver {
 		}
 
 		if (keyPairs.get("ping") != null) {
-			this.latency = System.currentTimeMillis() - Main.vehicle.pingSendTime;
+			this.setLatency((int)(System.currentTimeMillis() - Main.vehicle.pingSendTime));
 		}
 
 		if (keyPairs.get("access") != null) {
@@ -84,12 +90,14 @@ public class Receiver {
 			Scanner s = new Scanner(keyPairs.get("speed"));
 			if (s.hasNextDouble())
 				Main.vehicle.setSpeedMPS(s.nextDouble());
+			s.close();
 		}
 
 		if (keyPairs.get("alt") != null) {
 			Scanner s = new Scanner(keyPairs.get("alt"));
 			if (s.hasNextDouble())
 				Main.vehicle.setAltitude(s.nextDouble());
+			s.close();
 		}
 	}
 
@@ -170,8 +178,8 @@ public class Receiver {
 	public int getPort() {
 		return this.port;
 	}
-
-	public long getLatency() {
-		return this.latency;
+	
+	public void setLatency(int latency){
+		this.latencyProperty.set(latency);
 	}
 }

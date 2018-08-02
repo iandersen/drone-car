@@ -1,18 +1,12 @@
 package com.htmlhigh5.gui;
 
-import java.util.Observable;
-import java.util.Observer;
-
-import com.htmlhigh5.vehicle.BadGPIOValueException;
 import com.htmlhigh5.vehicle.GPIOComponent;
 import com.htmlhigh5.vehicle.GPIOType;
 import com.sun.javafx.geom.BaseBounds;
 import com.sun.javafx.geom.transform.BaseTransform;
 import com.sun.javafx.jmx.MXNodeAlgorithm;
 import com.sun.javafx.jmx.MXNodeAlgorithmContext;
-import com.sun.javafx.sg.prism.NGNode;
 
-import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ToolBar;
@@ -42,9 +36,10 @@ public class ComponentStatusPanel extends Pane {
 			speedScroller.valueProperty().addListener(ov -> {
 				device.setRestValue((int)speedScroller.getValue());
 		    });
-			Text valueText = new Text("Value: " + device.getValue());
+			Text valueText = new Text(""+device.getValue());
+			valueText.setStyle("-fx-font-weight: bold");
 			device.valueProperty.addListener(ov -> {
-				valueText.setText("Value: " + device.getValue());
+				valueText.setText(""+device.getValue());
 			});
 			this.getChildren().add(new ToolBar(new Text(device.getName()), valueText,
 					new Text("Min: " + device.getMin()),
