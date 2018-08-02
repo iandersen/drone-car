@@ -1,5 +1,7 @@
 package com.htmlhigh5.gui;
 
+import java.util.ArrayList;
+
 import com.htmlhigh5.Main;
 import com.htmlhigh5.vehicle.Vehicle;
 import com.lynden.gmapsfx.GoogleMapView;
@@ -8,6 +10,7 @@ import com.lynden.gmapsfx.javascript.object.GoogleMap;
 import com.lynden.gmapsfx.javascript.object.LatLong;
 import com.lynden.gmapsfx.javascript.object.MVCArray;
 import com.lynden.gmapsfx.javascript.object.MapOptions;
+import com.lynden.gmapsfx.javascript.object.MapShape;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
@@ -27,6 +30,7 @@ public class MapPane implements MapComponentInitializedListener {
 	public double lastLon = 0;
 	private CircleOptions locationMarkerOptions; 
 	private Circle locationMarker;
+	ArrayList<MapShape> allShapes = new ArrayList<MapShape>();
 
 	public MapPane(GoogleMap map, GoogleMapView mapView) {
 		this.map = map;
@@ -42,12 +46,21 @@ public class MapPane implements MapComponentInitializedListener {
 			lastTwoPoints.push(new LatLong(this.lastLat, this.lastLon));
 			lastTwoPoints.push(new LatLong(this.lat, this.lon));
 			lineOptions.path(lastTwoPoints).strokeColor("#FF0000").visible(true).strokeWeight(2);
-			this.map.addMapShape(new Polyline(lineOptions));
+			Polyline line = new Polyline(lineOptions);
+			allShapes.add(line);
+			this.map.addMapShape(line);
 		}
 		this.lastLat = this.lat;
 		this.lastLon = this.lon;
 		locationMarker.setCenter(new LatLong(this.lat, this.lon));
 		this.map.setCenter(new LatLong(this.lat, this.lon));
+	}
+	
+	public void clearPath(){
+		for(MapShape s : allShapes){
+			map.removeMapShape(s);
+		}
+		allShapes = new ArrayList<MapShape>();
 	}
 
 	@Override
@@ -55,9 +68,9 @@ public class MapPane implements MapComponentInitializedListener {
 		// Set the initial properties of the map.
 		MapOptions mapOptions = new MapOptions();
 
-		mapOptions.center(new LatLong(34.438855, -118.553971)).mapType(MapTypeIdEnum.ROADMAP).overviewMapControl(false)
+		mapOptions.center(new LatLong(34.438, -118.553)).mapType(MapTypeIdEnum.ROADMAP).overviewMapControl(false)
 				.panControl(false).rotateControl(false).scaleControl(false).streetViewControl(false).zoomControl(false)
-				.zoom(12);
+				.zoom(17);
 		this.map = mapView.createMap(mapOptions);
 		locationMarkerOptions = new CircleOptions().visible(true).fillColor("#ff0000").radius(2);
 		locationMarker = new Circle(locationMarkerOptions);

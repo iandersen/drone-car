@@ -35,7 +35,7 @@ public class Vehicle {
     public DoubleProperty mphProperty = new SimpleDoubleProperty(0);
     public DoubleProperty altitudeProperty = new SimpleDoubleProperty(0);
     public double topSpeed = 0;
-    public double highestAltitude = Double.MIN_VALUE;
+    public double highestAltitude = -1000;
     public double lowestAltitude = Double.MAX_VALUE;
 
     public void start() {
@@ -78,6 +78,12 @@ public class Vehicle {
                 }
             }
         }).start();
+    }
+    
+    public void resetStats(){
+    	this.topSpeed = 0;
+    	this.lowestAltitude = Double.MAX_VALUE;
+    	this.highestAltitude = -1000;
     }
     
     public double getLat(){

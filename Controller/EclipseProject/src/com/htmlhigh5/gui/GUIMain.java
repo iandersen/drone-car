@@ -21,6 +21,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ToolBar;
@@ -70,6 +71,10 @@ public class GUIMain extends Application {
 			});
 		});
 		mapView.addMapInializedListener(mapPane);
+		Button resetMapButton = new Button("Reset Map");
+		resetMapButton.setOnAction(ev -> {
+			mapPane.clearPath();
+		});
 
 		// Add a keyboard listener
 		pane.setOnKeyPressed(new EventHandler<KeyEvent>() {
@@ -121,40 +126,15 @@ public class GUIMain extends Application {
 			}
 		});
 
-		// TO DO - Use an overlaying webview to use bootstrap with javafx -
-		// https://stackoverflow.com/questions/21268062/bootstrap-with-javafx
-		//
 		VBox allToolbars = new VBox();
 		this.addAllToolbarsToPane(allToolbars);
 		this.toolbarPane = allToolbars;
 
-		// WebView webView = new WebView();
-		// webView.maxWidth(400);
-		// webView.maxHeight(400);
-		// webView.setMaxHeight(400);
-		// webView.setMaxWidth(400);
-		// WebEngine webEngine = webView.getEngine();
-
-		// URL url = getClass().getResource("controls.html");
-		// webEngine.load(url.toExternalForm());
-		//
-		// WebView videoStream = new WebView();
-		// WebEngine videoEngine = videoStream.getEngine();
-
-		// URL streamUrl = new
-		// URL("https://wowza.jwplayer.com/live/jelly.stream/playlist.m3u8");
-		// try {
-		// videoEngine.load((new
-		// URL("http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8").toExternalForm()));
-		// } catch (MalformedURLException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
 
 		borderPane.prefWidthProperty().bind(scene.widthProperty());
 		borderPane.prefHeightProperty().bind(scene.heightProperty());
 
-		borderPane.setTop(mapView);
+		borderPane.setTop(new VBox(mapView, resetMapButton));
 		borderPane.setLeft(new VehicleStatusPanel());
 		borderPane.setCenter(allToolbars);
 		borderPane.setStyle("-fx-background-color: #333");
