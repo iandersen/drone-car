@@ -55,7 +55,7 @@ public class Vehicle {
                         Thread.sleep((int) (1000 * 1 / self.packetsPerSecond));
                         if (Main.receiver.isConnected) {
                             // Check the latency every three seconds
-                            if (i >= self.packetsPerSecond * 3) {
+                            if (i >= self.packetsPerSecond / 2) {
                                 i = 0;
                                 Main.transmitter.sendCustomPacket(new CustomPacket("ping"));
                                 self.pingSendTime = System.currentTimeMillis();
