@@ -7,6 +7,7 @@ import select
 import hashlib
 import os
 from gps3 import gps3
+import re
 
 #time.sleep(10)
 #connect to pigpiod daemon
@@ -41,12 +42,17 @@ streamStarted = 0
 
 #GPS Things
 lat = 0;
+totalLat = 0;
+totalLon = 0;
+ticksIdle = 0;
 lon = 0;
 alt = 0;
 gpsTime = '0';
 gpsSpeed = 0;
 climb = 0;
 hasConnectedToGPS = 0;
+averagePosWhileStill = 1;
+hasMoved = 0;
 
 class GpsPoller(threading.Thread):
     def __init__(self):
@@ -66,30 +72,42 @@ class GpsPoller(threading.Thread):
         global gpsSpeed
         global hasConnectedToGPS
         global stopped
+        global hasMoved
+        global totalLat
+        global totalLon
+        global ticksIdle
         while not stopped:
             for new_data in self.socket:
                 if new_data:
                     self.stream.unpack(new_data)
-                    lat = self.stream.TPV['lat']
-                    lon = self.stream.TPV['lon']
+                    if self.stream.TPV['lat'] != "n/a" and hasMoved:
+                        lat = self.stream.TPV['lat']
+                        lon = self.stream.TPV['lon']
+                        totalLat = 0;
+                        totalLon = 0;
+                        ticksIdle = 0;
+                    elif self.stream.TPV['lat'] != "n/a":
+                        totalLat += float(self.stream.TPV['lat'])
+                        totalLon += float(self.stream.TPV['lon'])
+                        ticksIdle+=1
+                        lat = totalLat/ticksIdle
+                        lon = totalLon/ticksIdle
                     alt = self.stream.TPV['alt']
                     gpsTime = self.stream.TPV['time']
                     gpsSpeed = self.stream.TPV['speed']
                     climb = self.stream.TPV['climb']
                     if lat != 'n/a':
-                        print(str(lat)+','+str(lon))
                         respond('position',str(lat)+','+str(lon))
                         respond('speed',str(gpsSpeed))
                         respond('alt',str(alt))
                     if hasConnectedToGPS == 0 and lat != 'n/a':
                         hasConnectedToGPS = 1
-                        print 'GPS Connection Established!'
+                        respond("debug", 'GPS Connection Established!')
 
 gpsp = GpsPoller()
 gpsp.start()
 
 def respond(key, value):
-        print "Responding " + str(key) + ", " + str(value)
         global responseContent
         responseContent += "|||" + key + ":::" + value
 
@@ -104,10 +122,13 @@ class GPIOThread(threading.Thread):
         global pulsewidth
         global pi
         global stopped
+        global hasMoved
         while not stopped:
             m=0
             for i in range(2, len(new_pw)):
+                hasMoved = 0;
                 if new_pw[i] != current_pw[i]:
+                    hasMoved = 1;
                     current_pw[i]=new_pw[i]
                     print "Setting ", i, " to ", new_pw[i]
                     if new_pw[i] >= 500:
@@ -244,8 +265,11 @@ while not stopped:
                                                 respond("debug", "Screenshot taken!")
                                         elif customData == "ping":
                                                 customsocket.sendto("|||ping:::ping", (verifiedAddress[0], sendPort))
+                                        elif re.match(customData, 'speech'):
+                                            os.system('./speak.sh "' + customData.split('|', 2)[1] +'"')
+                                            respond("debug", "Just said: " + customData.split('|', 2)[1]);
                                         else:
                                                 print "UNRECOGNIZED COMMAND: ", customData
-                                                respond("error", "UNRECOGNIZED COMMAND: ", customData)
+                                                respond("error", "UNRECOGNIZED COMMAND: " +str(customData))
     except(KeyboardInterrupt,SystemExit):
         close()
