@@ -13,6 +13,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -30,12 +31,15 @@ public class GUIMain extends Application {
 	GoogleMapView mapView;
 	MapPane mapPane;
 	GoogleMap map;
+	protected static Node focusedNode = null;
+	ArrayList<String> keysDown = new ArrayList<String>();
+	static GUIMain instance = null;
 
 	@Override
 	public void start(Stage stage) throws InterruptedException, URISyntaxException {
+		instance = this;
 		Pane pane = new Pane();
 		BorderPane borderPane = new BorderPane();
-		ArrayList<String> keysDown = new ArrayList<String>();
 		mapView = new GoogleMapView();
 		mapView.setPrefHeight(400);
 		mapView.setPrefWidth(400);
@@ -56,18 +60,22 @@ public class GUIMain extends Application {
 		// Add a keyboard listener
 		pane.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
-				String text = ke.getText();
-				Main.userControl.keyPressed(text);
-				if (!keysDown.contains(text))
-					keysDown.add(text);
+				if(focusedNode == null){
+					String text = ke.getText();
+					Main.userControl.keyPressed(text);
+					if (!keysDown.contains(text))
+						keysDown.add(text);
+				}
 			}
 		});
 
 		// Listen for releases
 		pane.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			public void handle(KeyEvent ke) {
-				if (keysDown.contains(ke.getText()))
-					keysDown.remove(ke.getText());
+				if(focusedNode == null){
+					if (keysDown.contains(ke.getText()))
+						keysDown.remove(ke.getText());
+				}
 			}
 		});
 		new Thread(new Runnable() {
@@ -130,12 +138,19 @@ public class GUIMain extends Application {
 		borderPane.setTop(new VBox(mapView, resetMapButton));
 		borderPane.setLeft(new VehicleStatusPanel());
 		borderPane.setRight(allToolbars);
-		borderPane.setBottom(consoleContainer);
+		borderPane.setCenter(consoleContainer);
 		borderPane.setStyle("-fx-background-color: #333");
 
 		pane.getChildren().add(borderPane);
 
 		// mediaPlayer.play();
+	}
+	
+	protected void focus(Node n){
+		focusedNode = n;
+		if(n != null){
+			keysDown.clear();
+		}
 	}
 
 	private void addAllToolbarsToPane(Pane pane) {

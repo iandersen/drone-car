@@ -19,6 +19,7 @@ public class Receiver {
 	public IntegerProperty latencyProperty = new SimpleIntegerProperty();
 	public boolean hasConnected = false;
 	public boolean isConnected = false;
+	public int connectionTime = 0;
 
 	public Receiver() {
 		this.port = Main.config.getInt("LISTEN_PORT");
@@ -38,6 +39,7 @@ public class Receiver {
 			String message = new String(receivePacket.getData());
 			this.parsePacket(message);
 			receiveData = new byte[1024];
+			connectionTime++;
 			// InetAddress IPAddress = receivePacket.getAddress();
 			// int port = receivePacket.getPort();
 			// System.out.println("Received from " + IPAddress + ":" + port);
